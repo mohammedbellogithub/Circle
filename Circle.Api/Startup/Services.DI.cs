@@ -15,6 +15,8 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Circle.Api.Startup
 {
@@ -23,6 +25,8 @@ namespace Circle.Api.Startup
         
         public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration Configuration)
         {
+            services.AddControllers();
+
             services.AddDbContext<CircleDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
 
             services.AddSingleton<IDbConnection>(db =>
@@ -36,9 +40,16 @@ namespace Circle.Api.Startup
             services.AddTransient<IUserService, UserService>();
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
 
+            services.AddMvc(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+               .RequireAuthenticatedUser().Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
+                //options.Filters.Add(new GlobalExceptionFilter());
+            });
 
             //
-            services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             return services;

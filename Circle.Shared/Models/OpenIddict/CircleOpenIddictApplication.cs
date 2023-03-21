@@ -15,8 +15,8 @@ namespace Circle.Shared.Models.OpenIddict
             Id = Guid.NewGuid();
 
         }
-        public string AppId { get; set; }
-        public string Language { get; set; }
+        public string? AppId { get; set; }
+        public string? Language { get; set; }
     }
 
     public class CircleOpenIddictAuthorization : OpenIddictEntityFrameworkCoreAuthorization<Guid, CircleOpenIddictApplication, CircleOpenIddictToken> { }

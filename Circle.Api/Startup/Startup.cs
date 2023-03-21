@@ -1,12 +1,17 @@
-﻿using Circle.Shared.Context;
+﻿using Circle.Shared.Constants;
+using Circle.Shared.Context;
+using Circle.Shared.Models.OpenIddict;
 using DbUp;
 using DbUp.Engine.Output;
 using DbUp.Helpers;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using OpenIddict.Abstractions;
+using OpenIddict.Core;
 using Serilog;
 using Serilog.Events;
 using System.Data;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Circle.Api.Startup
 {
@@ -72,6 +77,7 @@ namespace Circle.Api.Startup
             }
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
@@ -88,28 +94,28 @@ namespace Circle.Api.Startup
             TableMigrationScript(scope);
             StoredProcedureMigrationScript(scope);
 
-            //var manager = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationManager<WalureOpenIddictApplication>>();
+            var manager = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationManager<CircleOpenIddictApplication>>();
             ////await OpenIddictManager.CreateClientApps(builder.Configuration["AuthSettings:Authority"], manager, cancellationToken);
 
-            //if (await manager.FindByClientIdAsync(ClientConstant.BackOfficeClientId) is null)
-            //{
-            //    await manager.CreateAsync(new OpenIddictApplicationDescriptor
-            //    {
-            //        ClientId = ClientConstant.BackOfficeClientId,
-            //        ClientSecret = ClientConstant.BackOfficeClientSecret,
-            //        DisplayName = "Walure Back Office",
-            //        Permissions =
-            //        {
-            //            Permissions.Endpoints.Token,
-            //               Permissions.GrantTypes.Password,
-            //               Permissions.GrantTypes.RefreshToken,
-            //               Permissions.Scopes.Email,
-            //               Permissions.Scopes.Profile,
-            //               Permissions.Scopes.Roles,
-            //               Permissions.Endpoints.Revocation
-            //        }
-            //    });
-            //}
+            if (await manager.FindByClientIdAsync(ClientConstant.BackOfficeClientId) is null)
+            {
+                await manager.CreateAsync(new OpenIddictApplicationDescriptor
+                {
+                    ClientId = ClientConstant.BackOfficeClientId,
+                    ClientSecret = ClientConstant.BackOfficeClientSecret,
+                    DisplayName = "Circle System",
+                    Permissions =
+                    {
+                        Permissions.Endpoints.Token,
+                           Permissions.GrantTypes.Password,
+                           Permissions.GrantTypes.RefreshToken,
+                           Permissions.Scopes.Email,
+                           Permissions.Scopes.Profile,
+                           Permissions.Scopes.Roles,
+                           Permissions.Endpoints.Revocation
+                    }
+                });
+            }
         }
         /// <summary>
         /// Sql migration for table Schema
