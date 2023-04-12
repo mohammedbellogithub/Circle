@@ -17,7 +17,10 @@ namespace Circle.Shared.Helpers
         public static Guid FRONTDESK_ID() => Guid.Parse("ca7061a2-138c-45b7-870c-699caa9ca99b");
         public const string FRONTDESK = nameof(FRONTDESK);
 
-        
+        public static Guid DEFAULT_ID() => Guid.Parse("cf185b00-652d-4c52-a3fb-4c94cb794718");
+        public const string DEFAULT = nameof(DEFAULT);
+
+
 
         public static List<string> GetAll()
         {
@@ -25,7 +28,7 @@ namespace Circle.Shared.Helpers
             {
                 SYS_ADMIN,
                 ADMIN,
-                //OPERATION,
+                DEFAULT,
                 //HR,
                 //ACCOUNTANT,
                 //ACADEMY,

@@ -42,6 +42,13 @@ namespace Circle.Shared.Models.Map
                     Name = RoleHelpers.FRONTDESK,
                     NormalizedName = RoleHelpers.FRONTDESK.ToString(),
                     IsInBuilt = true
+                },
+                  new AppRoles
+                {
+                    Id = RoleHelpers.DEFAULT_ID(),
+                    Name = RoleHelpers.DEFAULT,
+                    NormalizedName = RoleHelpers.DEFAULT.ToString(),
+                    IsInBuilt = true
                 }
             };
 

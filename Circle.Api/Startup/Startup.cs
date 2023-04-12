@@ -75,8 +75,8 @@ namespace Circle.Api.Startup
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors("circle-cors");
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseAuthorization();
 

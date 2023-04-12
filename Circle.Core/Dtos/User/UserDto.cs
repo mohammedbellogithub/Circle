@@ -8,7 +8,7 @@ namespace Circle.Core.Dtos.User
 {
     public class UserDto
     {
-        public string? Id { get; set; }
+        public Guid Id { get; set; }
         public string? Username { get; set; }
         public string? Email { get; set; }
         public bool EmailConfirmed { get; set; }
@@ -25,5 +25,7 @@ namespace Circle.Core.Dtos.User
         public string? Department { get; set; }
         public DateTime? LastLoginDate { get; set; }
         public int Gender { get; set; }
+
+        public int TotalCount { get; set; }
     }
 }
