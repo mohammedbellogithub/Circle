@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Repository\Registration\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Circle.Shared\Circle.Shared.csproj" />
   </ItemGroup>
 

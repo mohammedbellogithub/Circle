@@ -5,16 +5,16 @@ using Circle.Shared.Models.UserIdentity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-namespace Circle.Api.Startup
+using System.Text;
+
+namespace Circle.Api
 {
-    public static class Auth
+    public static partial class Startup
     {
-        public static IServiceCollection ConfigureAuthServices(this IServiceCollection services, IConfiguration Configuration)
+        public static WebApplicationBuilder ConfigureAuthServices(this WebApplicationBuilder builder)
         {
-            services.AddIdentity<AppUsers, AppRoles>(options =>
+            builder.Services.AddIdentity<AppUsers, AppRoles>(options =>
             {
                 //to be reconfigured
                 options.Password.RequireNonAlphanumeric = false;
@@ -29,7 +29,7 @@ namespace Circle.Api.Startup
          .AddDefaultTokenProviders()
          .AddSignInManager<SignInManager<AppUsers>>();
 
-            services.Configure<IdentityOptions>(options =>
+            builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.ClaimsIdentity.UserNameClaimType = Claims.Name;
                 options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
@@ -37,10 +37,10 @@ namespace Circle.Api.Startup
             });
 
             var authSettings = new AuthSettings();
-            Configuration.Bind(nameof(AuthSettings), authSettings);
+            builder.Configuration.Bind(nameof(AuthSettings), authSettings);
             var tokenExpiry = TimeSpan.FromMinutes(authSettings.TokenExpiry);
 
-            services.AddOpenIddict()
+            builder.Services.AddOpenIddict()
             .AddCore(options =>
             {
                 // Configure OpenIddict to use the Entity Framework Core stores and models.
@@ -106,7 +106,7 @@ namespace Circle.Api.Startup
                 options.UseAspNetCore();
             });
 
-            services.AddAuthentication(x =>
+            builder.Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -128,7 +128,7 @@ namespace Circle.Api.Startup
             }); ;
 
 
-            return services;
+            return builder;
         }
     }
 }

@@ -8,7 +8,7 @@ using OpenIddict.Validation.AspNetCore;
 namespace Circle.Api.Controllers
 {
     [Authorize(AuthenticationSchemes = AuthSchemes)]
-    public abstract class BaseController : Controller
+    public abstract class BaseController : ControllerBase
     {
         private const string AuthSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
 
@@ -18,6 +18,7 @@ namespace Circle.Api.Controllers
             return this.ApiResponse("", "Payload cannot be empty", ApiResponseCodes.INVALID_REQUEST);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         public IActionResult ApiResponse(dynamic? data = default(object), string[]? messages = null,
           ApiResponseCodes codes = ApiResponseCodes.OK, int? totalCount = 0)
         {
@@ -56,6 +57,7 @@ namespace Circle.Api.Controllers
         {
             return ApiResponse(data, new string[] { message }, codes, totalCount);
         }
+
 
         private IActionResult ReturnHttpMessage<T>(ApiResponseCodes codes, ApiResponse<T> response) where T : class
         {

@@ -19,7 +19,7 @@ namespace Circle.Api.Controllers
     /// <summary>
     /// OpenId Connect Auth Controller
     /// </summary>
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
 

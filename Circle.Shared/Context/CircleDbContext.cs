@@ -1,4 +1,5 @@
-﻿using Circle.Shared.Models.Map;
+﻿using Circle.Shared.Models.Businesses;
+using Circle.Shared.Models.Map;
 using Circle.Shared.Models.OpenIddict;
 using Circle.Shared.Models.UserIdentity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -44,5 +45,11 @@ namespace Circle.Shared.Context
             //      relationship.DeleteBehavior = DeleteBehavior.Restrict;
             //  }
         }
+
+
+        public DbSet<Business>? Business { get; set; }
+        public DbSet<BusinessCategory>? BusinessCategory { get; set; }
+
+
     }
 }

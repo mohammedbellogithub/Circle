@@ -1,6 +1,14 @@
-using Circle.Api.Startup;
+using Circle.Api;
 
-var app = Startup.AppConfiguration(args);
+var builder = WebApplication.CreateBuilder(args)
+    .RegisterServices()
+    .RegisterDI()
+    .ConfigureSerilog()
+    .ConfigureAuthServices();
+
+var app = builder.Build();
+
+app.ConfigureMiddleware();
 app.Run();
 
 
