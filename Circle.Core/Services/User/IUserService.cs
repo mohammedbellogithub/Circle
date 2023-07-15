@@ -1,5 +1,6 @@
 ﻿using Circle.Core.Dtos.User;
 using Circle.Core.ViewModels.User;
+using Circle.Shared.Configs;
 using Circle.Shared.Dapper;
 using Circle.Shared.Models.UserIdentity;
 using System;
@@ -17,5 +18,11 @@ namespace Circle.Core.Services.User
         Task<UserResponseViewModel?> SignUp(UserRegisterationViewModel user);
 
         Task<UserResponseViewModel?> AddUser(UserRegisterationViewModel user);
+
+        Task<bool> ValidateOTPAsync(string email, string code);
+        Task<UserResponseViewModel?> ResendOTPAsync(string username);
+        Task<UserResponseViewModel?> ChangePasswordAsync(string oldPassword, string newPassword);
+        Task ResetPasswordAsync();
+       
     }
 }

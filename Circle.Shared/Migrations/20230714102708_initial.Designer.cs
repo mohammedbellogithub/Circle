@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Circle.Shared.Migrations
 {
     [DbContext(typeof(CircleDbContext))]
-    [Migration("20230712234641_initial")]
+    [Migration("20230714102708_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -534,7 +534,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"),
-                            ConcurrencyStamp = "ae6c1d1b61084320b8b05d4fc4fdd698",
+                            ConcurrencyStamp = "d500960d8b2e41b69beeca14c25905cd",
                             IsInBuilt = true,
                             Name = "SYS_ADMIN",
                             NormalizedName = "SYS_ADMIN"
@@ -542,7 +542,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"),
-                            ConcurrencyStamp = "61a5fc822c284b27932019efdc43eb67",
+                            ConcurrencyStamp = "a89b364fe3bc4a4aa5feb5f393055bd4",
                             IsInBuilt = true,
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
@@ -550,7 +550,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"),
-                            ConcurrencyStamp = "de3b7e90e1ed43dfb471b3ce27fc6dad",
+                            ConcurrencyStamp = "1a17f505bab547a7a7a2358a64237b8a",
                             IsInBuilt = true,
                             Name = "FRONTDESK",
                             NormalizedName = "FRONTDESK"
@@ -558,7 +558,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"),
-                            ConcurrencyStamp = "5c315cf433e94597911491552ff9c1bf",
+                            ConcurrencyStamp = "2256ccdae62b4adf9e1b712ccd58ecc3",
                             IsInBuilt = true,
                             Name = "DEFAULT",
                             NormalizedName = "DEFAULT"
@@ -782,7 +782,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "9e03cd83-710e-4cf1-93fd-a1755114432d",
+                            ConcurrencyStamp = "1c96139e-2756-4c84-8600-32ebbd1cff64",
                             CreatedOn = new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "system@innercircle.com",
                             EmailConfirmed = true,
@@ -793,7 +793,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEM@INNERCIRCLE.COM",
                             NormalizedUserName = "SYSTEM@INNERCIRCLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPbsX8DcqTiE3nm/tC6Mf2Henep0d8D4Y2uQ4w4wx8FdVilq05FWoGAwpM13bVOW8A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEO7NLBpj+71R2eZDnalsWl3OFH1awnX/eFeS3A3mkvjpIzIrRlCHhHL0ZQwEUnG6JQ==",
                             PhoneNumber = "08108565760",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "3c147856-b944-49f7-8c03-86eab5feadac",
@@ -805,7 +805,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "045a66de-fbd0-4071-ae69-bfae666fcdf4",
+                            ConcurrencyStamp = "7b5a1d8b-145b-4b9b-ab31-042233a2fa9c",
                             CreatedOn = new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "mohammedbello678@gmail.com",
                             EmailConfirmed = true,
@@ -816,7 +816,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMEDBELLO678@GMAIL.COM",
                             NormalizedUserName = "MOHAMMEDBELLO678@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFe8RUt6303DWqoHlFJoifcDIV4xUm21JmoY852UZJkUhK3dvJnEPlDeRO98cXL6KA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHfXGZ1jkzNofOcYOMEgMmrZprFK7Etuf4dqQpZuuc0nVzKLBraXkH/9ZYld6GO85w==",
                             PhoneNumber = "09025055210",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "318338a4-8f26-47d7-bb01-66b8784aeae6",
@@ -828,7 +828,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "d6b62f0f-eec1-437a-9faf-0c93b254fd37",
+                            ConcurrencyStamp = "72127e84-f38a-4dd9-b51e-64867942683c",
                             CreatedOn = new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@innercircle.com",
                             EmailConfirmed = true,
@@ -839,7 +839,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@INNERCIRCLE.COM",
                             NormalizedUserName = "ADMIN@INNERCIRCLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBGk1G9TSAb/LxllQr9/h2PrR8cHtHu+JKnN42LTbDFTe1ZtRiEq4+/mZjYfVaizww==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFHTHbqLfg31tYhimrQps+RcotqbD1PuRZ0UdpKH7BIKFogocTGFl5BLv271Q3vj4A==",
                             PhoneNumber = "09025055210",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "d2db0156-280e-4867-9795-8303362024dd",
@@ -851,7 +851,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "459294c8-d398-40b3-9b9c-55c0ac8f4c48",
+                            ConcurrencyStamp = "fcf09221-9833-4e62-8499-fb2c92249659",
                             CreatedOn = new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "frontdesk@innercircle.com",
                             EmailConfirmed = true,
@@ -862,7 +862,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "FRONTDESK@INNERCIRCLE.COM",
                             NormalizedUserName = "FRONTDESK@INNERCIRCLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOm4uCPyVt3TKoZTiPxBmZLmDwDfMNGAUcdRnjlC+few4MCcaIUODMCVwaHRxoJx/A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHXgT//vt9VXWjdrDd2hjgnh2apgCW6cAGJkEmoCfg3m+yZS1+NLp07yLeuTfOkFfQ==",
                             PhoneNumber = "+2349025055210",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "81b94cda-96bb-43e0-ac86-6d4a3de474f9",
@@ -877,17 +877,17 @@ namespace Circle.Shared.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AppUserTokenMap", (string)null);
+                    b.ToTable("AppUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Circle.Shared.Models.Businesses.BusinessCategory", b =>

@@ -1,0 +1,15 @@
+<tr>
+	<td class="title-36 a-center pb-15" style="font-size:20px; text-align:left !important; line-height:40px; color:#282828; font-family:'PT Sans', Arial, sans-serif; min-width:auto !important; text-align:center; padding-bottom: 15px;">
+		<p>Dear {Name},</p>
+	</td>
+</tr>
+<tr>
+	<td class="text-16 lh-26 a-center pb-25" style="font-size:16px; color:#282828; font-family:'PT Sans', Arial, sans-serif; min-width:auto !important; line-height: 26px; text-align:center; padding-bottom: 25px;">
+		<p style="text-align:center;">To verify your email address registration on Circle, please use the following One Time Password (OTP):</p>
+		<h1 style="text-align:center;"> {OTP} </h1>
+		<p style="text-align:center;"><small>This OTP is valid for 3minutes only and will expire by {expiry_time}</small></br></p>
+		<p style="text-align:center;">Do not share this OTP with anyone as we take your account security very seriously.<br><br></p>
+		<p style="text-align:center;"><small>If you did not initiate this request,there&#39;s nothing to worry about &#8208; you can safely ignore it.</small></br></p>
+		
+	</td>
+</tr>

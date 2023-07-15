@@ -165,13 +165,13 @@ CREATE TABLE [AppUserRoles] (
 );
 GO
 
-CREATE TABLE [AppUserTokenMap] (
+CREATE TABLE [AppUserTokens] (
     [UserId] uniqueidentifier NOT NULL,
-    [LoginProvider] nvarchar(max) NULL,
-    [Name] nvarchar(max) NULL,
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [Name] nvarchar(450) NOT NULL,
     [Value] nvarchar(max) NULL,
-    CONSTRAINT [PK_AppUserTokenMap] PRIMARY KEY ([UserId]),
-    CONSTRAINT [FK_AppUserTokenMap_AppUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AppUsers] ([Id]) ON DELETE CASCADE
+    CONSTRAINT [PK_AppUserTokens] PRIMARY KEY ([UserId], [LoginProvider], [Name]),
+    CONSTRAINT [FK_AppUserTokens_AppUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AppUsers] ([Id]) ON DELETE CASCADE
 );
 GO
 
@@ -276,10 +276,10 @@ GO
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'IsInBuilt', N'ModifiedBy', N'ModifiedOn', N'Name', N'NormalizedName') AND [object_id] = OBJECT_ID(N'[AppRoles]'))
     SET IDENTITY_INSERT [AppRoles] ON;
 INSERT INTO [AppRoles] ([Id], [ConcurrencyStamp], [CreatedBy], [CreatedOn], [IsInBuilt], [ModifiedBy], [ModifiedOn], [Name], [NormalizedName])
-VALUES ('773a3af2-cd9f-4f65-869f-0cfdc1e1589e', N'ae6c1d1b61084320b8b05d4fc4fdd698', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'SYS_ADMIN', N'SYS_ADMIN'),
-('ca7061a2-138c-45b7-870c-699caa9ca99b', N'de3b7e90e1ed43dfb471b3ce27fc6dad', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'FRONTDESK', N'FRONTDESK'),
-('cc785f2a-2c0a-4648-87b7-a500084a2c1a', N'61a5fc822c284b27932019efdc43eb67', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'ADMIN', N'ADMIN'),
-('cf185b00-652d-4c52-a3fb-4c94cb794718', N'5c315cf433e94597911491552ff9c1bf', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'DEFAULT', N'DEFAULT');
+VALUES ('773a3af2-cd9f-4f65-869f-0cfdc1e1589e', N'd500960d8b2e41b69beeca14c25905cd', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'SYS_ADMIN', N'SYS_ADMIN'),
+('ca7061a2-138c-45b7-870c-699caa9ca99b', N'1a17f505bab547a7a7a2358a64237b8a', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'FRONTDESK', N'FRONTDESK'),
+('cc785f2a-2c0a-4648-87b7-a500084a2c1a', N'a89b364fe3bc4a4aa5feb5f393055bd4', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'ADMIN', N'ADMIN'),
+('cf185b00-652d-4c52-a3fb-4c94cb794718', N'2256ccdae62b4adf9e1b712ccd58ecc3', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'DEFAULT', N'DEFAULT');
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'IsInBuilt', N'ModifiedBy', N'ModifiedOn', N'Name', N'NormalizedName') AND [object_id] = OBJECT_ID(N'[AppRoles]'))
     SET IDENTITY_INSERT [AppRoles] OFF;
 GO
@@ -287,10 +287,10 @@ GO
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'AccessFailedCount', N'Activated', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'DeletedBy', N'DeletedOn', N'Department', N'Email', N'EmailConfirmed', N'FirstName', N'Gender', N'IsDeleted', N'IsPasswordDefault', N'LastLoginDate', N'LastName', N'LockoutEnabled', N'LockoutEnd', N'MiddleName', N'ModifiedBy', N'ModifiedOn', N'NormalizedEmail', N'NormalizedUserName', N'PasswordHash', N'PhoneNumber', N'PhoneNumberConfirmed', N'ProviderKey', N'RefreshToken', N'SecurityStamp', N'StaffNo', N'TwoFactorEnabled', N'Unit', N'UserName', N'UserType', N'UserTypeId') AND [object_id] = OBJECT_ID(N'[AppUsers]'))
     SET IDENTITY_INSERT [AppUsers] ON;
 INSERT INTO [AppUsers] ([Id], [AccessFailedCount], [Activated], [ConcurrencyStamp], [CreatedBy], [CreatedOn], [DeletedBy], [DeletedOn], [Department], [Email], [EmailConfirmed], [FirstName], [Gender], [IsDeleted], [IsPasswordDefault], [LastLoginDate], [LastName], [LockoutEnabled], [LockoutEnd], [MiddleName], [ModifiedBy], [ModifiedOn], [NormalizedEmail], [NormalizedUserName], [PasswordHash], [PhoneNumber], [PhoneNumberConfirmed], [ProviderKey], [RefreshToken], [SecurityStamp], [StaffNo], [TwoFactorEnabled], [Unit], [UserName], [UserType], [UserTypeId])
-VALUES ('1743b5bd-1eb1-45b3-9630-99596b17cf53', 0, CAST(1 AS bit), N'045a66de-fbd0-4071-ae69-bfae666fcdf4', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'mohammedbello678@gmail.com', CAST(1 AS bit), N'Mohammed', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'MOHAMMEDBELLO678@GMAIL.COM', N'MOHAMMEDBELLO678@GMAIL.COM', N'AQAAAAEAACcQAAAAEFe8RUt6303DWqoHlFJoifcDIV4xUm21JmoY852UZJkUhK3dvJnEPlDeRO98cXL6KA==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'318338a4-8f26-47d7-bb01-66b8784aeae6', NULL, CAST(0 AS bit), NULL, N'mohammedbello678@gmail.com', NULL, NULL),
-('50b70c44-9eb7-4549-9a48-7d37809b7d8e', 0, CAST(1 AS bit), N'9e03cd83-710e-4cf1-93fd-a1755114432d', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'system@innercircle.com', CAST(1 AS bit), N'John', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Doe', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'SYSTEM@INNERCIRCLE.COM', N'SYSTEM@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEPbsX8DcqTiE3nm/tC6Mf2Henep0d8D4Y2uQ4w4wx8FdVilq05FWoGAwpM13bVOW8A==', N'08108565760', CAST(1 AS bit), NULL, NULL, N'3c147856-b944-49f7-8c03-86eab5feadac', NULL, CAST(0 AS bit), NULL, N'system@innercircle.com', NULL, NULL),
-('96623538-0615-4d01-9023-7352bb4bb9c6', 0, CAST(1 AS bit), N'459294c8-d398-40b3-9b9c-55c0ac8f4c48', NULL, '2020-10-15T00:00:00.0000000', NULL, NULL, NULL, N'frontdesk@innercircle.com', CAST(1 AS bit), N'babatunde', NULL, CAST(0 AS bit), NULL, '2020-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'FRONTDESK@INNERCIRCLE.COM', N'FRONTDESK@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEOm4uCPyVt3TKoZTiPxBmZLmDwDfMNGAUcdRnjlC+few4MCcaIUODMCVwaHRxoJx/A==', N'+2349025055210', CAST(1 AS bit), NULL, NULL, N'81b94cda-96bb-43e0-ac86-6d4a3de474f9', NULL, CAST(0 AS bit), NULL, N'frontdesk@innercircle.com', NULL, NULL),
-('ca5eb7a4-de1e-40a1-9c58-ac452112aa92', 0, CAST(1 AS bit), N'd6b62f0f-eec1-437a-9faf-0c93b254fd37', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'admin@innercircle.com', CAST(1 AS bit), N'', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Admin', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'ADMIN@INNERCIRCLE.COM', N'ADMIN@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEBGk1G9TSAb/LxllQr9/h2PrR8cHtHu+JKnN42LTbDFTe1ZtRiEq4+/mZjYfVaizww==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'd2db0156-280e-4867-9795-8303362024dd', NULL, CAST(0 AS bit), NULL, N'admin@innercircle.com', NULL, NULL);
+VALUES ('1743b5bd-1eb1-45b3-9630-99596b17cf53', 0, CAST(1 AS bit), N'7b5a1d8b-145b-4b9b-ab31-042233a2fa9c', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'mohammedbello678@gmail.com', CAST(1 AS bit), N'Mohammed', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'MOHAMMEDBELLO678@GMAIL.COM', N'MOHAMMEDBELLO678@GMAIL.COM', N'AQAAAAEAACcQAAAAEHfXGZ1jkzNofOcYOMEgMmrZprFK7Etuf4dqQpZuuc0nVzKLBraXkH/9ZYld6GO85w==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'318338a4-8f26-47d7-bb01-66b8784aeae6', NULL, CAST(0 AS bit), NULL, N'mohammedbello678@gmail.com', NULL, NULL),
+('50b70c44-9eb7-4549-9a48-7d37809b7d8e', 0, CAST(1 AS bit), N'1c96139e-2756-4c84-8600-32ebbd1cff64', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'system@innercircle.com', CAST(1 AS bit), N'John', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Doe', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'SYSTEM@INNERCIRCLE.COM', N'SYSTEM@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEO7NLBpj+71R2eZDnalsWl3OFH1awnX/eFeS3A3mkvjpIzIrRlCHhHL0ZQwEUnG6JQ==', N'08108565760', CAST(1 AS bit), NULL, NULL, N'3c147856-b944-49f7-8c03-86eab5feadac', NULL, CAST(0 AS bit), NULL, N'system@innercircle.com', NULL, NULL),
+('96623538-0615-4d01-9023-7352bb4bb9c6', 0, CAST(1 AS bit), N'fcf09221-9833-4e62-8499-fb2c92249659', NULL, '2020-10-15T00:00:00.0000000', NULL, NULL, NULL, N'frontdesk@innercircle.com', CAST(1 AS bit), N'babatunde', NULL, CAST(0 AS bit), NULL, '2020-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'FRONTDESK@INNERCIRCLE.COM', N'FRONTDESK@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEHXgT//vt9VXWjdrDd2hjgnh2apgCW6cAGJkEmoCfg3m+yZS1+NLp07yLeuTfOkFfQ==', N'+2349025055210', CAST(1 AS bit), NULL, NULL, N'81b94cda-96bb-43e0-ac86-6d4a3de474f9', NULL, CAST(0 AS bit), NULL, N'frontdesk@innercircle.com', NULL, NULL),
+('ca5eb7a4-de1e-40a1-9c58-ac452112aa92', 0, CAST(1 AS bit), N'72127e84-f38a-4dd9-b51e-64867942683c', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'admin@innercircle.com', CAST(1 AS bit), N'', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Admin', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'ADMIN@INNERCIRCLE.COM', N'ADMIN@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEFHTHbqLfg31tYhimrQps+RcotqbD1PuRZ0UdpKH7BIKFogocTGFl5BLv271Q3vj4A==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'd2db0156-280e-4867-9795-8303362024dd', NULL, CAST(0 AS bit), NULL, N'admin@innercircle.com', NULL, NULL);
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'AccessFailedCount', N'Activated', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'DeletedBy', N'DeletedOn', N'Department', N'Email', N'EmailConfirmed', N'FirstName', N'Gender', N'IsDeleted', N'IsPasswordDefault', N'LastLoginDate', N'LastName', N'LockoutEnabled', N'LockoutEnd', N'MiddleName', N'ModifiedBy', N'ModifiedOn', N'NormalizedEmail', N'NormalizedUserName', N'PasswordHash', N'PhoneNumber', N'PhoneNumberConfirmed', N'ProviderKey', N'RefreshToken', N'SecurityStamp', N'StaffNo', N'TwoFactorEnabled', N'Unit', N'UserName', N'UserType', N'UserTypeId') AND [object_id] = OBJECT_ID(N'[AppUsers]'))
     SET IDENTITY_INSERT [AppUsers] OFF;
 GO
@@ -368,7 +368,7 @@ CREATE UNIQUE INDEX [IX_OpenIddictTokens_ReferenceId] ON [OpenIddictTokens] ([Re
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230712234641_initial', N'6.0.12');
+VALUES (N'20230714102708_initial', N'6.0.12');
 GO
 
 COMMIT;

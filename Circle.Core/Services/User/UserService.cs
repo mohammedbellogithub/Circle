@@ -1,57 +1,41 @@
 ﻿using Circle.Core.Dtos.User;
+using Circle.Core.Services.Cache;
 using Circle.Core.ViewModels.User;
 using Circle.Shared.Dapper;
 using Circle.Shared.Dapper.Interfaces;
 using Circle.Shared.Helpers;
 using Circle.Shared.Models.UserIdentity;
+using Circle.Shared.Utils;
 using Dapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Circle.Core.Services.User
 {
     public class UserService : Service<AppUsers>, IUserService
     {
-        private readonly SignInManager<AppUsers> _signInManager;
-        private readonly IPasswordHasher<AppUsers> _passwordHasher;
         private readonly UserManager<AppUsers> _userManager;
         private readonly RoleManager<AppRoles> _roleManager;
-        private readonly ILogger<UserService> _logger;
-        //private readonly AppSettings _appSettings;
-        //private readonly IUserRoleService _userRoleService;
-        //private readonly INotifier _notifier;
-        private readonly IConfiguration _configuration;
+        private readonly ICacheService _cacheService;
 
 
-        public UserService(SignInManager<AppUsers> signInManager,
-            IPasswordHasher<AppUsers> passwordHasher, 
+        public UserService(
             UserManager<AppUsers> userManager,
-            RoleManager<AppRoles> roleManager, 
-            ILogger<UserService> logger,
+            RoleManager<AppRoles> roleManager,
             IUnitOfWork iuow,
-            IConfiguration configuration) : base(iuow)
+            ICacheService cacheService) : base(iuow)
         {
-            _signInManager = signInManager;
-            _passwordHasher = passwordHasher;
             _userManager = userManager;
             _roleManager = roleManager;
-            _logger = logger;
-            _configuration = configuration;
+            _cacheService = cacheService;
         }
 
         public async Task<UserResponseViewModel?> SignUp(UserRegisterationViewModel viewModel)
         {
             //check if model is valid
             if (!base.IsValid(viewModel))
-                return default;
+                return null;
 
             //check if the user exists
             var userExists = _userManager.Users.FirstOrDefault(x => x.FirstName == viewModel.FirstName
@@ -89,8 +73,6 @@ namespace Circle.Core.Services.User
 
             user = (AppUsers)viewModel;
             user.Activated = false;
-            user.EmailConfirmed = false;
-            user.PhoneNumberConfirmed = true;
             user.IsPasswordDefault = false;
 
 
@@ -112,7 +94,6 @@ namespace Circle.Core.Services.User
             user.CreatedBy = "SIGN UP";
             user.ModifiedBy = "DEFAULT";
             user.UserType = 1;
-
             //Add user to default role
             createResult = await _userManager.AddToRoleAsync(user, RoleHelpers.DEFAULT);
             if (!createResult.Succeeded)
@@ -123,9 +104,8 @@ namespace Circle.Core.Services.User
             }
             user.CreatedOn = DateTime.Now;
 
-            //generate email comfirmation token
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
+            var token = RandomGenerator.GenerateRandomNumber(6);
+            _cacheService.SetCacheInfo(user.Email, token);
             var response = (UserResponseViewModel)user;
             response.Token = token;
             return response;
@@ -235,6 +215,92 @@ namespace Circle.Core.Services.User
             var response = (UserResponseViewModel)user;
             response.Token = token;
             return response;
+        }
+
+        public async Task<bool>  ValidateOTPAsync(string email, string code)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult("invalid user"));
+                return false;
+            }
+
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                base.Results.Add(new ValidationResult("Your Cicle account is temorarily restricted. Kindly try again later."));
+                return false;
+            }
+
+            var otp = _cacheService.GetCacheKey(user.Email);
+
+            if (otp is not null && otp == code)
+            {
+                
+                user.Activated = true;
+                user.EmailConfirmed = true;
+                await _userManager.UpdateAsync(user);
+                return true;
+            }
+
+            if (otp is  null || otp != code)
+            {
+                await _userManager.AccessFailedAsync(user);
+                base.Results.Add(new ValidationResult($"OTP validation failed"));
+                return false;
+            }
+
+            return false;
+        }
+
+        public async Task<UserResponseViewModel?> ResendOTPAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if(user is null || user.IsDeleted)
+            {
+                this.Results.Add(new ValidationResult("user not found"));
+                return null;
+            }
+
+            var response = (UserResponseViewModel)user;
+            
+            response.Token = RandomGenerator.GenerateRandomNumber(6);
+            _cacheService.SetCacheInfo(user.Email, response.Token);
+
+            return response;
+        }
+
+        public async Task<UserResponseViewModel?> ChangePasswordAsync(string oldPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
+
+            var correctPassword = await _userManager.CheckPasswordAsync(user, oldPassword);
+
+            if (!correctPassword)
+            {
+                ++user.AccessFailedCount;
+                await _userManager.UpdateAsync(user);
+                base.Results.Add(new ValidationResult($"Kindly ensure that your password is correct. Thank you "));
+                return null;
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+
+            if (!result.Succeeded)
+            {
+                base.Results.Add(new ValidationResult($"Kindly try again later or contact support. Thank you "));
+                return null;
+            }
+
+            var response = (UserResponseViewModel)user;
+            return response;
+        }
+
+        public Task ResetPasswordAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

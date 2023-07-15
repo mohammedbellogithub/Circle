@@ -9,6 +9,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Core;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using DbUp.Engine.Output;
+using Circle.Shared.Helpers;
 
 namespace Circle.Api
 {
@@ -34,7 +35,12 @@ namespace Circle.Api
                 endpoints.MapControllers();
             });
 
+            TableMigrationScript(app);
+            StoredProcedureMigrationScript(app);
             SeedDatabase(app).Wait();
+
+            WebHelpers.Configure(app.Services.GetRequiredService<IHttpContextAccessor>());
+
             return app;
         }
 
@@ -47,8 +53,6 @@ namespace Circle.Api
             var context = scope.ServiceProvider.GetRequiredService<CircleDbContext>();
             await context.Database.EnsureCreatedAsync();
 
-            TableMigrationScript(app);
-            StoredProcedureMigrationScript(app); 
 
             var manager = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationManager<CircleOpenIddictApplication>>();
 
@@ -100,6 +104,7 @@ namespace Circle.Api
             .WithScriptsFromFileSystem(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sql", "Sprocs"))
             .WithTransactionPerScript()
             .JournalTo(new NullJournal())
+            .JournalToSqlTable("dbo", "SprocsMigration")
             .LogTo(new SerilogDbUpLog(app.Logger))
             .LogToConsole()
             .Build();

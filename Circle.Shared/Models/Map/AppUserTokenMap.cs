@@ -13,8 +13,8 @@ namespace Circle.Shared.Models.Map
     {
         public void Configure(EntityTypeBuilder<AppUserTokens> builder)
         {
-            builder.ToTable(nameof(AppUserTokenMap));
-            builder.HasKey(b => b.UserId);
+            builder.ToTable(nameof(AppUserTokens));
+            builder.HasKey(b => new { b.UserId, b.LoginProvider, b.Name });
         }
     }
 }

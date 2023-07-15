@@ -32,8 +32,6 @@ namespace Circle.Api.Controllers
             _signInManager = signInManager;
             _identityOptions = identityOptions;
         }
-
-
         [AllowAnonymous]
         [HttpPost("~/api/auth/token"), Produces("application/json")]
         public async Task<IActionResult> Exchange()
@@ -53,12 +51,7 @@ namespace Circle.Api.Controllers
                 return result;
             }
 
-            return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                   properties: new AuthenticationProperties(new Dictionary<string, string?>
-                   {
-                       [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                       [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The specified grant type is not supported."
-                   }));
+            return Error("The specified grant type is not supported.");
         }
 
         private async Task<IActionResult> RefreshToken(OpenIddictRequest request)
@@ -74,23 +67,13 @@ namespace Circle.Api.Controllers
 
             if (user == null)
             {
-                return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                   properties: new AuthenticationProperties(new Dictionary<string, string?>
-                   {
-                       [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                       [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The refresh token is no longer valid."
-                   }));
+                return Error("The refresh token is no longer valid.");
             }
 
             // Ensure the user is still allowed to sign in.
             if (!await _signInManager.CanSignInAsync(user))
             {
-                return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                   properties: new AuthenticationProperties(new Dictionary<string, string?>
-                   {
-                       [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                       [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is no longer allowed to sign in."
-                   }));
+                return Error("The user is no longer allowed to sign in.");
             }
 
             // Create a new authentication ticket, but reuse the properties stored
@@ -108,34 +91,20 @@ namespace Circle.Api.Controllers
             //check if user is available
             if (user == null || user.IsDeleted)
             {
-                return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                     properties: new AuthenticationProperties(new Dictionary<string, string?>
-                     {
-                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Email or password is incorrect."
-                     }));
+                return Error("Email or password is incorrect.");
             }
 
             // Check if profile is activated
             if (!user.Activated)
             {
-                return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string?>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Your profile has not been activated."
-                    }));
+                return Error("Your profile has not been activated.");
             }
 
             // Ensure the user is allowed to sign in.
             if (!await _signInManager.CanSignInAsync(user))
             {
-                return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                   properties: new AuthenticationProperties(new Dictionary<string, string?>
-                   {
-                       [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                       [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "You are not allowed to sign in."
-                   }));
+                return Error("You are not allowed to sign in.");
+
             }
 
             // Reject the token request if two - factor authentication has been enabled by the user.
@@ -143,19 +112,17 @@ namespace Circle.Api.Controllers
             //{
 
             //Check User Password
-            if (!await _userManager.CheckPasswordAsync(user, request.Password))
+            var checkUserPassword = await _signInManager.PasswordSignInAsync(user, request.Password, false ,lockoutOnFailure: true);
+
+            if (checkUserPassword.IsLockedOut)
             {
-                return Forbid(authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-              properties: new AuthenticationProperties(new Dictionary<string, string?>
-              {
-                  [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                  [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Username or password is incorrect."
-              }));
+                return Error("Your account is temporarily locked out. Please try again later.");
             }
 
-            if (_userManager.SupportsUserLockout)
+            if (!checkUserPassword.Succeeded)
             {
-                await _userManager.ResetAccessFailedCountAsync(user);
+                return Error("Username or password is incorrect.");
+              
             }
 
             user.LastLoginDate = DateTime.Now;
@@ -265,6 +232,23 @@ namespace Circle.Api.Controllers
 
             if (user.LastLoginDate.HasValue)
                 identity.AddClaim(new Claim(ClaimTypeHelpers.LastLogin, user.LastLoginDate.Value.ToDateString("dd/MM/yyyy")));
+        }
+
+
+        /// <summary>
+        ///  Customized error that is returned in case of authentication error
+        /// </summary>
+        protected virtual IActionResult Error(string description)
+        {
+            var properties = new AuthenticationProperties(
+                new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = description
+                }!
+            );
+
+            return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
     }
 }

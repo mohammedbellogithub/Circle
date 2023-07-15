@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Circle.Core.Services.Email;
+using Circle.Core.Services.Cache;
 
 namespace Circle.Api
 {
@@ -29,6 +31,9 @@ namespace Circle.Api
            
             // Add services to the container.
             builder.Services.AddTransient<IUserService, UserService>();
+            builder.Services.AddTransient<IEmailService, EmailService>();
+            builder.Services.AddTransient<ICacheService, CacheService>();
+
 
             return builder;
 
