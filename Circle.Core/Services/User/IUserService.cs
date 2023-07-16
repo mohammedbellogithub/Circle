@@ -13,14 +13,12 @@ namespace Circle.Core.Services.User
 {
     public interface IUserService : IService<AppUsers>
     {
-        Task DeactivateUser(string userId);
-        Task SelfDeactivate();
-        Task<IEnumerable<UserViewModel>> GetUsers(string? keyword = null, string? roleName = null, int? pageIndex = 1, int? pageSize = 10);
-
-        Task<UserResponseViewModel?> SignUp(UserRegisterationViewModel user);
-
-        Task<UserResponseViewModel?> AddUser(UserRegisterationViewModel user);
-
+        Task DeleteUserAccountAsync(string userId);
+        Task DeactivateUserAsync(string userId);
+        Task SelfDeactivateAsync();
+        Task<IEnumerable<UserViewModel>> GetUsersAsync(string? keyword = null, string? roleName = null, int? pageIndex = 1, int? pageSize = 10);
+        Task<UserResponseViewModel?> SignUpAsync(UserRegisterationViewModel user);
+        Task<UserResponseViewModel?> AddUserAsync(UserRegisterationViewModel user);
         Task<bool> ValidateOTPAsync(string email, string code);
         Task<UserResponseViewModel?> ResendOTPAsync(string username);
         Task<UserResponseViewModel?> ChangePasswordAsync(string oldPassword, string newPassword);

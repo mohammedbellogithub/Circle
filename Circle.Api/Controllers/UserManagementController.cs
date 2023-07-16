@@ -35,7 +35,7 @@ namespace Circle.Api.Controllers
             _emailService = emailService;
         }
         /// <summary>
-        /// 
+        /// Paginated user list
         /// </summary>
         /// <param name="keyword"></param>
         /// <param name="role"></param>
@@ -46,7 +46,7 @@ namespace Circle.Api.Controllers
         [HttpGet("user-list/{pageIndex}/{pageSize}")]
         public async Task<IActionResult> GetUsers([FromQuery] string? keyword = null, [FromQuery] string? role = null, int? pageIndex = 1, int pageSize = 10)
         {
-            var userList = await _userService.GetUsers(keyword, role, pageIndex, pageSize);
+            var userList = await _userService.GetUsersAsync(keyword, role, pageIndex, pageSize);
 
             if (_userService.HasError)
             {
@@ -73,7 +73,7 @@ namespace Circle.Api.Controllers
             }), Array.Empty<string>(), totalCount: userList.FirstOrDefault()?.TotalCount);
         }
         /// <summary>
-        /// 
+        /// User account registration
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
@@ -86,7 +86,7 @@ namespace Circle.Api.Controllers
             if (viewModel == null)
                 return base.ApiResponse(default, "Empty payload", ApiResponseCodes.INVALID_REQUEST);
 
-            var response = await _userService.SignUp(viewModel);
+            var response = await _userService.SignUpAsync(viewModel);
 
             if (_userService.HasError)
             {
@@ -129,21 +129,18 @@ namespace Circle.Api.Controllers
             }, "User created successfully");
         }
         /// <summary>
-        /// 
+        /// Add a user -- Aimed for Backoffice users
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
+        [RequiresPermission(Permission.FULL_CONTROL)]
         [HttpPost("add-user")]
         public async Task<IActionResult> AddUser([FromBody] UserRegisterationViewModel viewModel)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return ApiResponse(UnprocessableEntity(ModelState), "TESTING", ApiResponseCodes.INVALID_REQUEST);
-            //};
             if (viewModel == null)
                 return base.ApiResponse(default, "Empty payload", ApiResponseCodes.INVALID_REQUEST);
 
-            await _userService.AddUser(viewModel);
+            await _userService.AddUserAsync(viewModel);
 
             if (_userService.HasError)
             {
@@ -161,6 +158,13 @@ namespace Circle.Api.Controllers
                 viewModel.Gender,
             }, "User created successfully");
         }
+
+        /// <summary>
+        /// Validate OTP sent
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("validate-otp")]
         public async Task<IActionResult> ValidateOTP(string email, string code)
@@ -204,7 +208,12 @@ namespace Circle.Api.Controllers
             return ApiResponse(null
             , "OTP sent to mail");
         }
-
+        /// <summary>
+        /// password change
+        /// </summary>
+        /// <param name="oldPassword"></param>
+        /// <param name="newPassword"></param>
+        /// <returns></returns>
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)
         {
@@ -231,6 +240,65 @@ namespace Circle.Api.Controllers
             });
             return ApiResponse(null
             , "Password changed successfully");
+        }
+        /// <summary>
+        /// Deactivate your account
+        /// </summary>
+        /// <returns></returns>
+        [RequiresPermission(Permission.FULL_DEFAULT_USER_CONTROL)]
+        [HttpPut("request-account-deactivation")]
+        public async Task<IActionResult> SelfDeactivate()
+        {
+            await _userService.SelfDeactivateAsync();
+
+            if (_userService.HasError)
+            {
+                return ApiResponse(null, _userService.Errors, ApiResponseCodes.ERROR);
+            }
+            return ApiResponse(null
+            , "Account Deactivated successfully");
+
+            //send mail
+        }
+        /// <summary>
+        /// Deactivate user account 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [RequiresPermission(Permission.FULL_CONTROL)]
+        [HttpPut("deactivate-user-account")]
+        public async Task<IActionResult> DeactivateUser(string userId)
+        {
+            await _userService.DeactivateUserAsync(userId);
+
+            if (_userService.HasError)
+            {
+                return ApiResponse(null, _userService.Errors, ApiResponseCodes.ERROR);
+            }
+            return ApiResponse(null
+            , "Account Deactivated successfully");
+
+            //send mail
+        }
+        /// <summary>
+        ///  Delete user account
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [RequiresPermission(Permission.FULL_CONTROL)]
+        [HttpDelete("delete-user-account")]
+        public async Task<IActionResult> DeleteUserAccount(string userId)
+        {
+            await _userService.DeleteUserAccountAsync(userId);
+
+            if (_userService.HasError)
+            {
+                return ApiResponse(null, _userService.Errors, ApiResponseCodes.ERROR);
+            }
+            return ApiResponse(null
+            , "Account Deleted successfully");
+
+            //send mail
         }
 
     }

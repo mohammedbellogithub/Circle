@@ -31,7 +31,7 @@ namespace Circle.Core.Services.User
             _cacheService = cacheService;
         }
 
-        public async Task<UserResponseViewModel?> SignUp(UserRegisterationViewModel viewModel)
+        public async Task<UserResponseViewModel?> SignUpAsync(UserRegisterationViewModel viewModel)
         {
             //check if model is valid
             if (!base.IsValid(viewModel))
@@ -112,7 +112,7 @@ namespace Circle.Core.Services.User
 
         }
 
-        public async Task<IEnumerable<UserViewModel>> GetUsers(string? keyword = null, string? roleName = null, int? pageIndex = 1, int? pageSize = 10)
+        public async Task<IEnumerable<UserViewModel>> GetUsersAsync(string? keyword = null, string? roleName = null, int? pageIndex = 1, int? pageSize = 10)
         {
             pageIndex = (pageIndex < 1 || !pageIndex.HasValue) ? 1 : pageIndex.Value;
             pageSize = (pageSize <= 1 || !pageSize.HasValue) ? 10 : pageSize.Value;
@@ -129,7 +129,7 @@ namespace Circle.Core.Services.User
             return result.Select(r => (UserViewModel)r);
         }
 
-        public async Task<UserResponseViewModel?> AddUser(UserRegisterationViewModel viewModel)
+        public async Task<UserResponseViewModel?> AddUserAsync(UserRegisterationViewModel viewModel)
         {
             //check if the user exists
             var userExists = _userManager.Users.FirstOrDefault(x => x.FirstName == viewModel.FirstName
@@ -301,16 +301,64 @@ namespace Circle.Core.Services.User
             throw new NotImplementedException();
         }
 
-        public async Task DeactivateUser(string userId)
+        public async Task DeactivateUserAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult($"User account not found. Kindly contact technical support."));
+                return;
+            }
+
+            var sysAdmin = await _userManager.IsInRoleAsync(user, RoleHelpers.SYS_ADMIN);
+            if (sysAdmin)
+            {
+                base.Results.Add(new ValidationResult($"User Deactivation failed. Kindly contact technical support."));
+                return;
+            }
             user.Activated = false;
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task SelfDeactivate()
+        public async Task SelfDeactivateAsync()
         {
             var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
+
+            if (user is null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult($"User account not found. Kindly contact technical support."));
+                return;
+            }
+
+            var sysAdmin = await _userManager.IsInRoleAsync(user, RoleHelpers.SYS_ADMIN);
+            if (sysAdmin)
+            {
+                base.Results.Add(new ValidationResult($"User Deactivation failed. Kindly contact technical support."));
+                return;
+            }
+            user.Activated = false;
+            await _userManager.UpdateAsync(user);
+        }
+
+        public async Task DeleteUserAccountAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var sysAdmin = await _userManager.IsInRoleAsync(user, RoleHelpers.SYS_ADMIN);
+            
+            if(user is null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult($"User account not found. Kindly contact technical support."));
+                return;
+            }
+
+            if (sysAdmin)
+            {
+                base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
+                return;
+            }
+            user.IsDeleted = true;
             user.Activated = false;
             await _userManager.UpdateAsync(user);
         }
