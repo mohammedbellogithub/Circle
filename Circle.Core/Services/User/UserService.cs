@@ -105,7 +105,7 @@ namespace Circle.Core.Services.User
             user.CreatedOn = DateTime.Now;
 
             var token = RandomGenerator.GenerateRandomNumber(6);
-            _cacheService.SetCacheInfo(user.Email, token);
+            _cacheService.SetCacheInfo(user.Email, token, duration: 5);
             var response = (UserResponseViewModel)user;
             response.Token = token;
             return response;
@@ -206,9 +206,7 @@ namespace Circle.Core.Services.User
                 return default;
             }
 
-            //user.CreatedBy = WebHelpers.CurrentUser.UserName; ---- set current enterprise user logged in
-            //model.ModifiedBy = WebHelpers.CurrentUser.UserName;
-
+            user.CreatedBy = WebHelpers.CurrentUser.UserName; 
             //generate email comfirmation token
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
@@ -267,7 +265,7 @@ namespace Circle.Core.Services.User
             var response = (UserResponseViewModel)user;
             
             response.Token = RandomGenerator.GenerateRandomNumber(6);
-            _cacheService.SetCacheInfo(user.Email, response.Token);
+            _cacheService.SetCacheInfo(user.Email, response.Token, duration: 5);
 
             return response;
         }
@@ -301,6 +299,20 @@ namespace Circle.Core.Services.User
         public Task ResetPasswordAsync()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task DeactivateUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            user.Activated = false;
+            await _userManager.UpdateAsync(user);
+        }
+
+        public async Task SelfDeactivate()
+        {
+            var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
+            user.Activated = false;
+            await _userManager.UpdateAsync(user);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace Circle.Core.Services.User
 {
     public interface IUserService : IService<AppUsers>
     {
+        Task DeactivateUser(string userId);
+        Task SelfDeactivate();
         Task<IEnumerable<UserViewModel>> GetUsers(string? keyword = null, string? roleName = null, int? pageIndex = 1, int? pageSize = 10);
 
         Task<UserResponseViewModel?> SignUp(UserRegisterationViewModel user);

@@ -58,8 +58,8 @@ namespace Circle.Api
                 options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Address, Scopes.Phone,
                     Scopes.Roles, Scopes.OfflineAccess, Scopes.OpenId);
 
-
-                options.SetTokenEndpointUris("/api/auth/token")
+                options.DisableAccessTokenEncryption()
+                .SetTokenEndpointUris("/api/auth/token")
                 .SetUserinfoEndpointUris("/api/auth/userinfo")
                 .SetRevocationEndpointUris("/api/auth/revoke")
                 .AllowRefreshTokenFlow()

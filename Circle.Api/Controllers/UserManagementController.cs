@@ -1,4 +1,5 @@
-﻿using Circle.Core.Services.Email;
+﻿using Circle.Core.Components.Filter;
+using Circle.Core.Services.Email;
 using Circle.Core.Services.User;
 using Circle.Core.ViewModels.User;
 using Circle.Shared.Constants;
@@ -41,6 +42,7 @@ namespace Circle.Api.Controllers
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
+        [RequiresPermission(Permission.FULL_CONTROL)]
         [HttpGet("user-list/{pageIndex}/{pageSize}")]
         public async Task<IActionResult> GetUsers([FromQuery] string? keyword = null, [FromQuery] string? role = null, int? pageIndex = 1, int pageSize = 10)
         {

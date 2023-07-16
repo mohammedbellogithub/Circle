@@ -1,7 +1,11 @@
-﻿using Circle.Core.Services.User;
+﻿using Circle.Core.Services.Cache;
+using Circle.Core.Services.User;
+using Circle.Shared.Enums;
 using Circle.Shared.Extensions;
 using Circle.Shared.Helpers;
 using Circle.Shared.Models.UserIdentity;
+using Circle.Shared.Security.Permission;
+using IdentityModel;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -26,11 +30,13 @@ namespace Circle.Api.Controllers
         private readonly UserManager<AppUsers> _userManager;
         private readonly SignInManager<AppUsers> _signInManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        public AuthController(UserManager<AppUsers> userManager, SignInManager<AppUsers> signInManager, IOptions<IdentityOptions> identityOptions)
+        private readonly ICacheService _cacheService;
+        public AuthController(UserManager<AppUsers> userManager, SignInManager<AppUsers> signInManager, IOptions<IdentityOptions> identityOptions, ICacheService cacheService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _identityOptions = identityOptions;
+            _cacheService = cacheService;
         }
         [AllowAnonymous]
         [HttpPost("~/api/auth/token"), Produces("application/json")]
@@ -125,9 +131,6 @@ namespace Circle.Api.Controllers
               
             }
 
-            user.LastLoginDate = DateTime.Now;
-            await _userManager.UpdateAsync(user);
-
             // Create a new authentication ticket.
             var principal = await CreateTicketAsync(request, user);
 
@@ -140,9 +143,17 @@ namespace Circle.Api.Controllers
           AuthenticationProperties? properties = null)
         {
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
-            var identity = (ClaimsIdentity)principal.Identity;
+            var identity = principal.Identity as ClaimsIdentity;
 
-            AddUserClaims(user, identity);
+            var permissionClaims = (from c in principal.Claims
+                                    where c.Type == nameof(Permission)
+                                    select c).ToArray();
+
+
+            Array.ForEach(permissionClaims, identity.RemoveClaim);
+            await CacheUserPermission(user.Id.ToString(), permissionClaims);
+
+            await AddClaims(principal, user, oidcRequest);
 
             // Create a new authentication ticket holding the user identity.
 
@@ -163,77 +174,14 @@ namespace Circle.Api.Controllers
 
             principal.SetResources("resource_server");
 
-            // Note: by default, claims are NOT automatically included in the access and identity tokens.
-            // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
-            // whether they should be included in access tokens, in identity tokens or in both.
-            var destinations = new List<string>
-            {
-                Destinations.AccessToken
-            };
-
+            
             foreach (var claim in principal.Claims)
             {
-                // Never include the security stamp in the access and identity tokens, as it's a secret value.
-                if (claim.Type == _identityOptions.Value.ClaimsIdentity.SecurityStampClaimType)
-                {
-                    continue;
-                }
-
-                // Only add the iterated claim to the id_token if the corresponding scope was granted to the client application.
-                // The other claims will only be added to the access_token, which is encrypted when using the default format.
-                if ((claim.Type == Claims.Name && principal.HasScope(Scopes.Profile)) ||
-                    (claim.Type == Claims.Email && principal.HasScope(Scopes.Email)) ||
-                    (claim.Type == Claims.Role && principal.HasScope(Claims.Role)) ||
-                    (claim.Type == Claims.Audience && principal.HasScope(Claims.Audience)))
-                {
-                    destinations.Add(Destinations.IdentityToken);
-                }
-
-                claim.SetDestinations(destinations);
+                claim.SetDestinations(GetDestinations(claim, principal));
             }
 
-            if (string.IsNullOrWhiteSpace(user.FirstName))
-            {
-                var name = new Claim(Claims.GivenName, user.FirstName ?? "[NA]");
-                name.SetDestinations(Destinations.AccessToken, Destinations.IdentityToken);
-                identity.AddClaim(name);
-            }
-
-            //if (user.IsPasswordDefault)
-            //{
-            //    var isUserPasswordDefault = new Claim(ClaimTypeHelpers.IsDefaultPassword, user.IsPasswordDefault ? "Yes" : "No");
-            //    isUserPasswordDefault.SetDestinations(Destinations.AccessToken);
-            //    identity.AddClaim(isUserPasswordDefault);
-            //}
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var userRole = roles.FirstOrDefault();
-
-            identity.AddClaim(new Claim(Scopes.Roles, userRole));
             return principal;
         }
-
-        private void AddUserClaims(AppUsers user, ClaimsIdentity identity)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-
-            if (identity == null)
-                throw new ArgumentNullException(nameof(identity));
-
-            if (!string.IsNullOrEmpty(user.FirstName))
-                identity.AddClaim(new Claim(ClaimTypeHelpers.FirstName, user.FirstName));
-
-            if (!string.IsNullOrEmpty(user.LastName))
-                identity.AddClaim(new Claim(ClaimTypeHelpers.LastName, user.LastName));
-
-            if (!string.IsNullOrEmpty(user.Email))
-                identity.AddClaim(new Claim(OpenIddictConstants.Claims.Email, user.Email));
-
-            if (user.LastLoginDate.HasValue)
-                identity.AddClaim(new Claim(ClaimTypeHelpers.LastLogin, user.LastLoginDate.Value.ToDateString("dd/MM/yyyy")));
-        }
-
 
         /// <summary>
         ///  Customized error that is returned in case of authentication error
@@ -249,6 +197,100 @@ namespace Circle.Api.Controllers
             );
 
             return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        /// <summary>
+        /// Sets an array of claims for the specified user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="permissionClaims"></param>
+        /// <returns></returns>
+        
+        private async Task CacheUserPermission(string userId, Claim[] permissionClaims)
+        {
+            //clears memory cache allocated for specified user
+             _cacheService.ClearCache(userId);
+
+            var permissions = from pc in permissionClaims
+                              select new PermissionProperties
+                              {
+                                  Name = pc.Type,
+                                  Id = pc.Value
+                              };
+
+             _cacheService.SetCacheInfo(userId, permissions, 300);
+        }
+
+        /// <summary>
+        /// Adds claims from <param name="user"/> to <param name="principal"/>.
+        /// Override this function if you want to remove/modify some pre-added claims.
+        /// If you just want to add more claims, consider overriding <see cref="GetClaims"/>
+        /// </summary>
+        protected virtual async Task AddClaims(ClaimsPrincipal principal, AppUsers user, OpenIddictRequest openIddictRequest)
+        {
+            IList<Claim> claims = await GetClaims(user, openIddictRequest);
+
+            ClaimsIdentity claimIdentity = principal.Identities.First();
+            claimIdentity.AddClaims(claims);
+        }
+
+        /// <summary>
+        /// Returns claims that will be added to the user's principal (and later to JWT token).
+        /// Consider overriding this function if you want to add more claims.
+        /// </summary>
+        protected virtual Task<IList<Claim>> GetClaims(AppUsers user, OpenIddictRequest openIddictRequest)
+        {
+            return Task.FromResult(new List<Claim>()
+                {
+                new(JwtClaimTypes.NickName, user.UserName),
+                new(JwtClaimTypes.Id, user.Id.ToString() ?? string.Empty),
+                new(JwtClaimTypes.Subject, user.Id.ToString() ?? string.Empty),
+                } as IList<Claim>
+            ) ;
+        }
+
+        /// <summary>
+        /// Returns destinations to which a certain claim could be returned
+        /// </summary>
+        protected virtual IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)
+        {
+            // Note: by default, claims are NOT automatically included in the access and identity tokens.
+            // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
+            // whether they should be included in access tokens, in identity tokens or in both.
+            switch (claim.Type)
+            {
+                case Claims.Name:
+                    yield return Destinations.AccessToken;
+
+                    if (principal.HasScope(Scopes.Profile))
+                        yield return Destinations.IdentityToken;
+
+                    yield break;
+
+                case Claims.Email:
+                    yield return Destinations.AccessToken;
+
+                    if (principal.HasScope(Scopes.Email))
+                        yield return Destinations.IdentityToken;
+
+                    yield break;
+
+                case Claims.Role:
+                    yield return Destinations.AccessToken;
+
+                    if (principal.HasScope(Scopes.Roles))
+                        yield return Destinations.IdentityToken;
+
+                    yield break;
+
+                // Never include the security stamp in the access and identity tokens, as it's a secret value.
+                case "AspNet.Identity.SecurityStamp":
+                    yield break;
+
+                default:
+                    yield return Destinations.AccessToken;
+                    yield break;
+            }
         }
     }
 }
