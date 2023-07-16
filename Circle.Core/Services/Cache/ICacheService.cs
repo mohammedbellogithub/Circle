@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Circle.Shared.Security.Permission;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,10 @@ namespace Circle.Core.Services.Cache
 {
     public interface ICacheService
     {
+        void ClearCache(string key);
         string GetCacheKey(string key);
-        void SetCacheInfo(string key, string OTP);
+        T GetGenericCache<T>(string key);
+
+        void SetCacheInfo<T>(string key, T OTP, int duration);
     }
 }

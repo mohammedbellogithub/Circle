@@ -11,6 +11,15 @@ GO
 BEGIN TRANSACTION;
 GO
 
+CREATE TABLE [AppRoleClaims] (
+    [Id] int NOT NULL IDENTITY,
+    [RoleId] uniqueidentifier NOT NULL,
+    [ClaimType] nvarchar(max) NULL,
+    [ClaimValue] nvarchar(max) NULL,
+    CONSTRAINT [PK_AppRoleClaims] PRIMARY KEY ([Id])
+);
+GO
+
 CREATE TABLE [AppRoles] (
     [Id] uniqueidentifier NOT NULL,
     [CreatedOn] datetime2 NULL,
@@ -18,10 +27,36 @@ CREATE TABLE [AppRoles] (
     [CreatedBy] uniqueidentifier NULL,
     [ModifiedBy] uniqueidentifier NULL,
     [IsInBuilt] bit NULL,
-    [Name] nvarchar(256) NULL,
-    [NormalizedName] nvarchar(256) NULL,
+    [Name] nvarchar(max) NULL,
+    [NormalizedName] nvarchar(max) NULL,
     [ConcurrencyStamp] nvarchar(max) NULL,
     CONSTRAINT [PK_AppRoles] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [AppUserClaims] (
+    [Id] int NOT NULL IDENTITY,
+    [UserId] uniqueidentifier NOT NULL,
+    [ClaimType] nvarchar(max) NULL,
+    [ClaimValue] nvarchar(max) NULL,
+    CONSTRAINT [PK_AppUserClaims] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [AppUserLogins] (
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [ProviderKey] nvarchar(450) NOT NULL,
+    [Id] int NOT NULL IDENTITY,
+    [ProviderDisplayName] nvarchar(max) NULL,
+    [UserId] uniqueidentifier NOT NULL,
+    CONSTRAINT [PK_AppUserLogins] PRIMARY KEY ([LoginProvider], [ProviderKey])
+);
+GO
+
+CREATE TABLE [AppUserRoles] (
+    [UserId] uniqueidentifier NOT NULL,
+    [RoleId] uniqueidentifier NOT NULL,
+    CONSTRAINT [PK_AppUserRoles] PRIMARY KEY ([UserId], [RoleId])
 );
 GO
 
@@ -48,10 +83,10 @@ CREATE TABLE [AppUsers] (
     [Department] nvarchar(max) NULL,
     [IsPasswordDefault] bit NULL,
     [StaffNo] nvarchar(max) NULL,
-    [UserName] nvarchar(256) NULL,
-    [NormalizedUserName] nvarchar(256) NULL,
-    [Email] nvarchar(256) NULL,
-    [NormalizedEmail] nvarchar(256) NULL,
+    [UserName] nvarchar(max) NULL,
+    [NormalizedUserName] nvarchar(max) NULL,
+    [Email] nvarchar(max) NULL,
+    [NormalizedEmail] nvarchar(max) NULL,
     [EmailConfirmed] bit NOT NULL,
     [PasswordHash] nvarchar(max) NULL,
     [SecurityStamp] nvarchar(max) NULL,
@@ -63,6 +98,15 @@ CREATE TABLE [AppUsers] (
     [LockoutEnabled] bit NOT NULL,
     [AccessFailedCount] int NOT NULL,
     CONSTRAINT [PK_AppUsers] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [AppUserTokens] (
+    [UserId] uniqueidentifier NOT NULL,
+    [LoginProvider] nvarchar(450) NOT NULL,
+    [Name] nvarchar(450) NOT NULL,
+    [Value] nvarchar(max) NULL,
+    CONSTRAINT [PK_AppUserTokens] PRIMARY KEY ([UserId], [LoginProvider], [Name])
 );
 GO
 
@@ -122,56 +166,6 @@ CREATE TABLE [OpenIddictScopes] (
     [Properties] nvarchar(max) NULL,
     [Resources] nvarchar(max) NULL,
     CONSTRAINT [PK_OpenIddictScopes] PRIMARY KEY ([Id])
-);
-GO
-
-CREATE TABLE [AppRoleClaims] (
-    [Id] int NOT NULL IDENTITY,
-    [RoleId] uniqueidentifier NOT NULL,
-    [ClaimType] nvarchar(max) NULL,
-    [ClaimValue] nvarchar(max) NULL,
-    CONSTRAINT [PK_AppRoleClaims] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_AppRoleClaims_AppRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AppRoles] ([Id]) ON DELETE CASCADE
-);
-GO
-
-CREATE TABLE [AppUserClaims] (
-    [Id] int NOT NULL IDENTITY,
-    [UserId] uniqueidentifier NOT NULL,
-    [ClaimType] nvarchar(max) NULL,
-    [ClaimValue] nvarchar(max) NULL,
-    CONSTRAINT [PK_AppUserClaims] PRIMARY KEY ([Id]),
-    CONSTRAINT [FK_AppUserClaims_AppUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AppUsers] ([Id]) ON DELETE CASCADE
-);
-GO
-
-CREATE TABLE [AppUserLogins] (
-    [LoginProvider] nvarchar(450) NOT NULL,
-    [ProviderKey] nvarchar(450) NOT NULL,
-    [Id] int NOT NULL IDENTITY,
-    [ProviderDisplayName] nvarchar(max) NULL,
-    [UserId] uniqueidentifier NOT NULL,
-    CONSTRAINT [PK_AppUserLogins] PRIMARY KEY ([LoginProvider], [ProviderKey]),
-    CONSTRAINT [FK_AppUserLogins_AppUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AppUsers] ([Id]) ON DELETE CASCADE
-);
-GO
-
-CREATE TABLE [AppUserRoles] (
-    [UserId] uniqueidentifier NOT NULL,
-    [RoleId] uniqueidentifier NOT NULL,
-    CONSTRAINT [PK_AppUserRoles] PRIMARY KEY ([UserId], [RoleId]),
-    CONSTRAINT [FK_AppUserRoles_AppRoles_RoleId] FOREIGN KEY ([RoleId]) REFERENCES [AppRoles] ([Id]) ON DELETE CASCADE,
-    CONSTRAINT [FK_AppUserRoles_AppUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AppUsers] ([Id]) ON DELETE CASCADE
-);
-GO
-
-CREATE TABLE [AppUserTokens] (
-    [UserId] uniqueidentifier NOT NULL,
-    [LoginProvider] nvarchar(450) NOT NULL,
-    [Name] nvarchar(450) NOT NULL,
-    [Value] nvarchar(max) NULL,
-    CONSTRAINT [PK_AppUserTokens] PRIMARY KEY ([UserId], [LoginProvider], [Name]),
-    CONSTRAINT [FK_AppUserTokens_AppUsers_UserId] FOREIGN KEY ([UserId]) REFERENCES [AppUsers] ([Id]) ON DELETE CASCADE
 );
 GO
 
@@ -273,71 +267,47 @@ CREATE TABLE [BusinessListingDocument] (
 );
 GO
 
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ClaimType', N'ClaimValue', N'RoleId') AND [object_id] = OBJECT_ID(N'[AppRoleClaims]'))
+    SET IDENTITY_INSERT [AppRoleClaims] ON;
+INSERT INTO [AppRoleClaims] ([Id], [ClaimType], [ClaimValue], [RoleId])
+VALUES (5, N'Permission', N'FULL_CONTROL', '773a3af2-cd9f-4f65-869f-0cfdc1e1589e'),
+(6, N'Permission', N'FULL_DEFAULT_USER_CONTROL', 'cf185b00-652d-4c52-a3fb-4c94cb794718'),
+(7, N'Permission', N'FRONTDESK_CONTROL', 'ca7061a2-138c-45b7-870c-699caa9ca99b'),
+(8, N'Permission', N'FULL_USER_CONTROL', 'cc785f2a-2c0a-4648-87b7-a500084a2c1a');
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ClaimType', N'ClaimValue', N'RoleId') AND [object_id] = OBJECT_ID(N'[AppRoleClaims]'))
+    SET IDENTITY_INSERT [AppRoleClaims] OFF;
+GO
+
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'IsInBuilt', N'ModifiedBy', N'ModifiedOn', N'Name', N'NormalizedName') AND [object_id] = OBJECT_ID(N'[AppRoles]'))
     SET IDENTITY_INSERT [AppRoles] ON;
 INSERT INTO [AppRoles] ([Id], [ConcurrencyStamp], [CreatedBy], [CreatedOn], [IsInBuilt], [ModifiedBy], [ModifiedOn], [Name], [NormalizedName])
-VALUES ('773a3af2-cd9f-4f65-869f-0cfdc1e1589e', N'd500960d8b2e41b69beeca14c25905cd', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'SYS_ADMIN', N'SYS_ADMIN'),
-('ca7061a2-138c-45b7-870c-699caa9ca99b', N'1a17f505bab547a7a7a2358a64237b8a', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'FRONTDESK', N'FRONTDESK'),
-('cc785f2a-2c0a-4648-87b7-a500084a2c1a', N'a89b364fe3bc4a4aa5feb5f393055bd4', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'ADMIN', N'ADMIN'),
-('cf185b00-652d-4c52-a3fb-4c94cb794718', N'2256ccdae62b4adf9e1b712ccd58ecc3', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'DEFAULT', N'DEFAULT');
+VALUES ('773a3af2-cd9f-4f65-869f-0cfdc1e1589e', N'79b7c6d29e404a959def18b75ca7b18a', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'SYS_ADMIN', N'SYS_ADMIN'),
+('ca7061a2-138c-45b7-870c-699caa9ca99b', N'80aa50c42af1486da89a384945651dd0', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'FRONTDESK', N'FRONTDESK'),
+('cc785f2a-2c0a-4648-87b7-a500084a2c1a', N'0a9264319efa437a9083bce9fcdf97ee', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'ADMIN', N'ADMIN'),
+('cf185b00-652d-4c52-a3fb-4c94cb794718', N'903d3a51670e4719b78269ceb6a29154', NULL, NULL, CAST(1 AS bit), NULL, NULL, N'DEFAULT', N'DEFAULT');
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'IsInBuilt', N'ModifiedBy', N'ModifiedOn', N'Name', N'NormalizedName') AND [object_id] = OBJECT_ID(N'[AppRoles]'))
     SET IDENTITY_INSERT [AppRoles] OFF;
+GO
+
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
+    SET IDENTITY_INSERT [AppUserRoles] ON;
+INSERT INTO [AppUserRoles] ([RoleId], [UserId])
+VALUES ('ca7061a2-138c-45b7-870c-699caa9ca99b', '1743b5bd-1eb1-45b3-9630-99596b17cf53'),
+('773a3af2-cd9f-4f65-869f-0cfdc1e1589e', '50b70c44-9eb7-4549-9a48-7d37809b7d8e'),
+('cc785f2a-2c0a-4648-87b7-a500084a2c1a', 'ca5eb7a4-de1e-40a1-9c58-ac452112aa92');
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
+    SET IDENTITY_INSERT [AppUserRoles] OFF;
 GO
 
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'AccessFailedCount', N'Activated', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'DeletedBy', N'DeletedOn', N'Department', N'Email', N'EmailConfirmed', N'FirstName', N'Gender', N'IsDeleted', N'IsPasswordDefault', N'LastLoginDate', N'LastName', N'LockoutEnabled', N'LockoutEnd', N'MiddleName', N'ModifiedBy', N'ModifiedOn', N'NormalizedEmail', N'NormalizedUserName', N'PasswordHash', N'PhoneNumber', N'PhoneNumberConfirmed', N'ProviderKey', N'RefreshToken', N'SecurityStamp', N'StaffNo', N'TwoFactorEnabled', N'Unit', N'UserName', N'UserType', N'UserTypeId') AND [object_id] = OBJECT_ID(N'[AppUsers]'))
     SET IDENTITY_INSERT [AppUsers] ON;
 INSERT INTO [AppUsers] ([Id], [AccessFailedCount], [Activated], [ConcurrencyStamp], [CreatedBy], [CreatedOn], [DeletedBy], [DeletedOn], [Department], [Email], [EmailConfirmed], [FirstName], [Gender], [IsDeleted], [IsPasswordDefault], [LastLoginDate], [LastName], [LockoutEnabled], [LockoutEnd], [MiddleName], [ModifiedBy], [ModifiedOn], [NormalizedEmail], [NormalizedUserName], [PasswordHash], [PhoneNumber], [PhoneNumberConfirmed], [ProviderKey], [RefreshToken], [SecurityStamp], [StaffNo], [TwoFactorEnabled], [Unit], [UserName], [UserType], [UserTypeId])
-VALUES ('1743b5bd-1eb1-45b3-9630-99596b17cf53', 0, CAST(1 AS bit), N'7b5a1d8b-145b-4b9b-ab31-042233a2fa9c', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'mohammedbello678@gmail.com', CAST(1 AS bit), N'Mohammed', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'MOHAMMEDBELLO678@GMAIL.COM', N'MOHAMMEDBELLO678@GMAIL.COM', N'AQAAAAEAACcQAAAAEHfXGZ1jkzNofOcYOMEgMmrZprFK7Etuf4dqQpZuuc0nVzKLBraXkH/9ZYld6GO85w==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'318338a4-8f26-47d7-bb01-66b8784aeae6', NULL, CAST(0 AS bit), NULL, N'mohammedbello678@gmail.com', NULL, NULL),
-('50b70c44-9eb7-4549-9a48-7d37809b7d8e', 0, CAST(1 AS bit), N'1c96139e-2756-4c84-8600-32ebbd1cff64', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'system@innercircle.com', CAST(1 AS bit), N'John', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Doe', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'SYSTEM@INNERCIRCLE.COM', N'SYSTEM@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEO7NLBpj+71R2eZDnalsWl3OFH1awnX/eFeS3A3mkvjpIzIrRlCHhHL0ZQwEUnG6JQ==', N'08108565760', CAST(1 AS bit), NULL, NULL, N'3c147856-b944-49f7-8c03-86eab5feadac', NULL, CAST(0 AS bit), NULL, N'system@innercircle.com', NULL, NULL),
-('96623538-0615-4d01-9023-7352bb4bb9c6', 0, CAST(1 AS bit), N'fcf09221-9833-4e62-8499-fb2c92249659', NULL, '2020-10-15T00:00:00.0000000', NULL, NULL, NULL, N'frontdesk@innercircle.com', CAST(1 AS bit), N'babatunde', NULL, CAST(0 AS bit), NULL, '2020-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'FRONTDESK@INNERCIRCLE.COM', N'FRONTDESK@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEHXgT//vt9VXWjdrDd2hjgnh2apgCW6cAGJkEmoCfg3m+yZS1+NLp07yLeuTfOkFfQ==', N'+2349025055210', CAST(1 AS bit), NULL, NULL, N'81b94cda-96bb-43e0-ac86-6d4a3de474f9', NULL, CAST(0 AS bit), NULL, N'frontdesk@innercircle.com', NULL, NULL),
-('ca5eb7a4-de1e-40a1-9c58-ac452112aa92', 0, CAST(1 AS bit), N'72127e84-f38a-4dd9-b51e-64867942683c', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'admin@innercircle.com', CAST(1 AS bit), N'', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Admin', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'ADMIN@INNERCIRCLE.COM', N'ADMIN@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEFHTHbqLfg31tYhimrQps+RcotqbD1PuRZ0UdpKH7BIKFogocTGFl5BLv271Q3vj4A==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'd2db0156-280e-4867-9795-8303362024dd', NULL, CAST(0 AS bit), NULL, N'admin@innercircle.com', NULL, NULL);
+VALUES ('1743b5bd-1eb1-45b3-9630-99596b17cf53', 0, CAST(1 AS bit), N'45925e43-2da0-4406-85f9-5fc04931b8d9', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'mohammedbello678@gmail.com', CAST(1 AS bit), N'Mohammed', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'MOHAMMEDBELLO678@GMAIL.COM', N'MOHAMMEDBELLO678@GMAIL.COM', N'AQAAAAEAACcQAAAAEJVQmfwiuKctp9UO46je1vOwtVn9P4ejz1HNdhuRdPAXw7l/1ZPHt0x9uWgjIQXqeQ==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'318338a4-8f26-47d7-bb01-66b8784aeae6', NULL, CAST(0 AS bit), NULL, N'mohammedbello678@gmail.com', NULL, NULL),
+('50b70c44-9eb7-4549-9a48-7d37809b7d8e', 0, CAST(1 AS bit), N'78e4f500-6c6f-4b34-8e55-ce656f082fe6', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'system@innercircle.com', CAST(1 AS bit), N'John', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Doe', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'SYSTEM@INNERCIRCLE.COM', N'SYSTEM@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEOAJi8ZBExzVsDrbwbYFINypUpgc9vTWFg3I6kez+dayxhmcGceXHAcd05SDiA1v1A==', N'08108565760', CAST(1 AS bit), NULL, NULL, N'3c147856-b944-49f7-8c03-86eab5feadac', NULL, CAST(0 AS bit), NULL, N'system@innercircle.com', NULL, NULL),
+('96623538-0615-4d01-9023-7352bb4bb9c6', 0, CAST(1 AS bit), N'528ca840-8a9a-4645-af87-ce93cc0595f1', NULL, '2020-10-15T00:00:00.0000000', NULL, NULL, NULL, N'frontdesk@innercircle.com', CAST(1 AS bit), N'babatunde', NULL, CAST(0 AS bit), NULL, '2020-10-15T00:00:00.0000000', N'Bello', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'FRONTDESK@INNERCIRCLE.COM', N'FRONTDESK@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAEBCpyx60s5wN3f7uDn4rjy1S5pJTPwXFuDfwX328xCItZlw26Uxtyhq+mX7X5P2Qrw==', N'+2349025055210', CAST(1 AS bit), NULL, NULL, N'81b94cda-96bb-43e0-ac86-6d4a3de474f9', NULL, CAST(0 AS bit), NULL, N'frontdesk@innercircle.com', NULL, NULL),
+('ca5eb7a4-de1e-40a1-9c58-ac452112aa92', 0, CAST(1 AS bit), N'8b28b312-bcba-4d10-a325-691a147c4e5d', NULL, '2022-10-15T00:00:00.0000000', NULL, NULL, NULL, N'admin@innercircle.com', CAST(1 AS bit), N'', NULL, CAST(0 AS bit), NULL, '2022-10-15T00:00:00.0000000', N'Admin', CAST(0 AS bit), NULL, NULL, NULL, NULL, N'ADMIN@INNERCIRCLE.COM', N'ADMIN@INNERCIRCLE.COM', N'AQAAAAEAACcQAAAAELxsUkPQZvhNXK4SPCp2YlC9m73aNN0eQN7uWO075l1JQzFXqSY5IZMYJSSbxwnbsQ==', N'09025055210', CAST(1 AS bit), NULL, NULL, N'd2db0156-280e-4867-9795-8303362024dd', NULL, CAST(0 AS bit), NULL, N'admin@innercircle.com', NULL, NULL);
 IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'AccessFailedCount', N'Activated', N'ConcurrencyStamp', N'CreatedBy', N'CreatedOn', N'DeletedBy', N'DeletedOn', N'Department', N'Email', N'EmailConfirmed', N'FirstName', N'Gender', N'IsDeleted', N'IsPasswordDefault', N'LastLoginDate', N'LastName', N'LockoutEnabled', N'LockoutEnd', N'MiddleName', N'ModifiedBy', N'ModifiedOn', N'NormalizedEmail', N'NormalizedUserName', N'PasswordHash', N'PhoneNumber', N'PhoneNumberConfirmed', N'ProviderKey', N'RefreshToken', N'SecurityStamp', N'StaffNo', N'TwoFactorEnabled', N'Unit', N'UserName', N'UserType', N'UserTypeId') AND [object_id] = OBJECT_ID(N'[AppUsers]'))
     SET IDENTITY_INSERT [AppUsers] OFF;
-GO
-
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
-    SET IDENTITY_INSERT [AppUserRoles] ON;
-INSERT INTO [AppUserRoles] ([RoleId], [UserId])
-VALUES ('ca7061a2-138c-45b7-870c-699caa9ca99b', '1743b5bd-1eb1-45b3-9630-99596b17cf53');
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
-    SET IDENTITY_INSERT [AppUserRoles] OFF;
-GO
-
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
-    SET IDENTITY_INSERT [AppUserRoles] ON;
-INSERT INTO [AppUserRoles] ([RoleId], [UserId])
-VALUES ('773a3af2-cd9f-4f65-869f-0cfdc1e1589e', '50b70c44-9eb7-4549-9a48-7d37809b7d8e');
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
-    SET IDENTITY_INSERT [AppUserRoles] OFF;
-GO
-
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
-    SET IDENTITY_INSERT [AppUserRoles] ON;
-INSERT INTO [AppUserRoles] ([RoleId], [UserId])
-VALUES ('cc785f2a-2c0a-4648-87b7-a500084a2c1a', 'ca5eb7a4-de1e-40a1-9c58-ac452112aa92');
-IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'RoleId', N'UserId') AND [object_id] = OBJECT_ID(N'[AppUserRoles]'))
-    SET IDENTITY_INSERT [AppUserRoles] OFF;
-GO
-
-CREATE INDEX [IX_AppRoleClaims_RoleId] ON [AppRoleClaims] ([RoleId]);
-GO
-
-CREATE UNIQUE INDEX [RoleNameIndex] ON [AppRoles] ([NormalizedName]) WHERE [NormalizedName] IS NOT NULL;
-GO
-
-CREATE INDEX [IX_AppUserClaims_UserId] ON [AppUserClaims] ([UserId]);
-GO
-
-CREATE INDEX [IX_AppUserLogins_UserId] ON [AppUserLogins] ([UserId]);
-GO
-
-CREATE INDEX [IX_AppUserRoles_RoleId] ON [AppUserRoles] ([RoleId]);
-GO
-
-CREATE INDEX [EmailIndex] ON [AppUsers] ([NormalizedEmail]);
-GO
-
-CREATE UNIQUE INDEX [UserNameIndex] ON [AppUsers] ([NormalizedUserName]) WHERE [NormalizedUserName] IS NOT NULL;
 GO
 
 CREATE INDEX [IX_BusinessCategory_BusinessId] ON [BusinessCategory] ([BusinessId]);
@@ -368,7 +338,7 @@ CREATE UNIQUE INDEX [IX_OpenIddictTokens_ReferenceId] ON [OpenIddictTokens] ([Re
 GO
 
 INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-VALUES (N'20230714102708_initial', N'6.0.12');
+VALUES (N'20230716141644_initial', N'6.0.12');
 GO
 
 COMMIT;

@@ -10,6 +10,21 @@ namespace Circle.Shared.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AppRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppRoleClaims", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AppRoles",
                 columns: table => new
                 {
@@ -19,13 +34,56 @@ namespace Circle.Shared.Migrations
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IsInBuilt = table.Column<bool>(type: "bit", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserClaims", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserRoles", x => new { x.UserId, x.RoleId });
                 });
 
             migrationBuilder.CreateTable(
@@ -54,10 +112,10 @@ namespace Circle.Shared.Migrations
                     Department = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsPasswordDefault = table.Column<bool>(type: "bit", nullable: true),
                     StaffNo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -72,6 +130,20 @@ namespace Circle.Shared.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                 });
 
             migrationBuilder.CreateTable(
@@ -146,114 +218,6 @@ namespace Circle.Shared.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OpenIddictScopes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppRoleClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppRoleClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AppRoleClaims_AppRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AppRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AppUserClaims_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AppUserLogins_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_AppUserRoles_AppRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AppRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AppUserRoles_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AppUserTokens_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -407,14 +371,35 @@ namespace Circle.Shared.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AppRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
+                values: new object[,]
+                {
+                    { 5, "Permission", "FULL_CONTROL", new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e") },
+                    { 6, "Permission", "FULL_DEFAULT_USER_CONTROL", new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718") },
+                    { 7, "Permission", "FRONTDESK_CONTROL", new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b") },
+                    { 8, "Permission", "FULL_USER_CONTROL", new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a") }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "CreatedBy", "CreatedOn", "IsInBuilt", "ModifiedBy", "ModifiedOn", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), "d500960d8b2e41b69beeca14c25905cd", null, null, true, null, null, "SYS_ADMIN", "SYS_ADMIN" },
-                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), "1a17f505bab547a7a7a2358a64237b8a", null, null, true, null, null, "FRONTDESK", "FRONTDESK" },
-                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), "a89b364fe3bc4a4aa5feb5f393055bd4", null, null, true, null, null, "ADMIN", "ADMIN" },
-                    { new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"), "2256ccdae62b4adf9e1b712ccd58ecc3", null, null, true, null, null, "DEFAULT", "DEFAULT" }
+                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), "79b7c6d29e404a959def18b75ca7b18a", null, null, true, null, null, "SYS_ADMIN", "SYS_ADMIN" },
+                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), "80aa50c42af1486da89a384945651dd0", null, null, true, null, null, "FRONTDESK", "FRONTDESK" },
+                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), "0a9264319efa437a9083bce9fcdf97ee", null, null, true, null, null, "ADMIN", "ADMIN" },
+                    { new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"), "903d3a51670e4719b78269ceb6a29154", null, null, true, null, null, "DEFAULT", "DEFAULT" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AppUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53") },
+                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e") },
+                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92") }
                 });
 
             migrationBuilder.InsertData(
@@ -422,65 +407,11 @@ namespace Circle.Shared.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Activated", "ConcurrencyStamp", "CreatedBy", "CreatedOn", "DeletedBy", "DeletedOn", "Department", "Email", "EmailConfirmed", "FirstName", "Gender", "IsDeleted", "IsPasswordDefault", "LastLoginDate", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "ModifiedBy", "ModifiedOn", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProviderKey", "RefreshToken", "SecurityStamp", "StaffNo", "TwoFactorEnabled", "Unit", "UserName", "UserType", "UserTypeId" },
                 values: new object[,]
                 {
-                    { new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"), 0, true, "7b5a1d8b-145b-4b9b-ab31-042233a2fa9c", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "mohammedbello678@gmail.com", true, "Mohammed", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "MOHAMMEDBELLO678@GMAIL.COM", "MOHAMMEDBELLO678@GMAIL.COM", "AQAAAAEAACcQAAAAEHfXGZ1jkzNofOcYOMEgMmrZprFK7Etuf4dqQpZuuc0nVzKLBraXkH/9ZYld6GO85w==", "09025055210", true, null, null, "318338a4-8f26-47d7-bb01-66b8784aeae6", null, false, null, "mohammedbello678@gmail.com", null, null },
-                    { new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"), 0, true, "1c96139e-2756-4c84-8600-32ebbd1cff64", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "system@innercircle.com", true, "John", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Doe", false, null, null, null, null, "SYSTEM@INNERCIRCLE.COM", "SYSTEM@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEO7NLBpj+71R2eZDnalsWl3OFH1awnX/eFeS3A3mkvjpIzIrRlCHhHL0ZQwEUnG6JQ==", "08108565760", true, null, null, "3c147856-b944-49f7-8c03-86eab5feadac", null, false, null, "system@innercircle.com", null, null },
-                    { new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"), 0, true, "fcf09221-9833-4e62-8499-fb2c92249659", null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "frontdesk@innercircle.com", true, "babatunde", null, false, null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "FRONTDESK@INNERCIRCLE.COM", "FRONTDESK@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEHXgT//vt9VXWjdrDd2hjgnh2apgCW6cAGJkEmoCfg3m+yZS1+NLp07yLeuTfOkFfQ==", "+2349025055210", true, null, null, "81b94cda-96bb-43e0-ac86-6d4a3de474f9", null, false, null, "frontdesk@innercircle.com", null, null },
-                    { new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"), 0, true, "72127e84-f38a-4dd9-b51e-64867942683c", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@innercircle.com", true, "", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, null, null, null, "ADMIN@INNERCIRCLE.COM", "ADMIN@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEFHTHbqLfg31tYhimrQps+RcotqbD1PuRZ0UdpKH7BIKFogocTGFl5BLv271Q3vj4A==", "09025055210", true, null, null, "d2db0156-280e-4867-9795-8303362024dd", null, false, null, "admin@innercircle.com", null, null }
+                    { new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"), 0, true, "45925e43-2da0-4406-85f9-5fc04931b8d9", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "mohammedbello678@gmail.com", true, "Mohammed", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "MOHAMMEDBELLO678@GMAIL.COM", "MOHAMMEDBELLO678@GMAIL.COM", "AQAAAAEAACcQAAAAEJVQmfwiuKctp9UO46je1vOwtVn9P4ejz1HNdhuRdPAXw7l/1ZPHt0x9uWgjIQXqeQ==", "09025055210", true, null, null, "318338a4-8f26-47d7-bb01-66b8784aeae6", null, false, null, "mohammedbello678@gmail.com", null, null },
+                    { new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"), 0, true, "78e4f500-6c6f-4b34-8e55-ce656f082fe6", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "system@innercircle.com", true, "John", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Doe", false, null, null, null, null, "SYSTEM@INNERCIRCLE.COM", "SYSTEM@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEOAJi8ZBExzVsDrbwbYFINypUpgc9vTWFg3I6kez+dayxhmcGceXHAcd05SDiA1v1A==", "08108565760", true, null, null, "3c147856-b944-49f7-8c03-86eab5feadac", null, false, null, "system@innercircle.com", null, null },
+                    { new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"), 0, true, "528ca840-8a9a-4645-af87-ce93cc0595f1", null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "frontdesk@innercircle.com", true, "babatunde", null, false, null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "FRONTDESK@INNERCIRCLE.COM", "FRONTDESK@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEBCpyx60s5wN3f7uDn4rjy1S5pJTPwXFuDfwX328xCItZlw26Uxtyhq+mX7X5P2Qrw==", "+2349025055210", true, null, null, "81b94cda-96bb-43e0-ac86-6d4a3de474f9", null, false, null, "frontdesk@innercircle.com", null, null },
+                    { new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"), 0, true, "8b28b312-bcba-4d10-a325-691a147c4e5d", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@innercircle.com", true, "", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, null, null, null, "ADMIN@INNERCIRCLE.COM", "ADMIN@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAELxsUkPQZvhNXK4SPCp2YlC9m73aNN0eQN7uWO075l1JQzFXqSY5IZMYJSSbxwnbsQ==", "09025055210", true, null, null, "d2db0156-280e-4867-9795-8303362024dd", null, false, null, "admin@innercircle.com", null, null }
                 });
-
-            migrationBuilder.InsertData(
-                table: "AppUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53") });
-
-            migrationBuilder.InsertData(
-                table: "AppUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e") });
-
-            migrationBuilder.InsertData(
-                table: "AppUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92") });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppRoleClaims_RoleId",
-                table: "AppRoleClaims",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "AppRoles",
-                column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppUserClaims_UserId",
-                table: "AppUserClaims",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppUserLogins_UserId",
-                table: "AppUserLogins",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppUserRoles_RoleId",
-                table: "AppUserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AppUsers",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AppUsers",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusinessCategory_BusinessId",
@@ -540,6 +471,9 @@ namespace Circle.Shared.Migrations
                 name: "AppRoleClaims");
 
             migrationBuilder.DropTable(
+                name: "AppRoles");
+
+            migrationBuilder.DropTable(
                 name: "AppUserClaims");
 
             migrationBuilder.DropTable(
@@ -547,6 +481,9 @@ namespace Circle.Shared.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AppUsers");
 
             migrationBuilder.DropTable(
                 name: "AppUserTokens");
@@ -559,12 +496,6 @@ namespace Circle.Shared.Migrations
 
             migrationBuilder.DropTable(
                 name: "OpenIddictTokens");
-
-            migrationBuilder.DropTable(
-                name: "AppRoles");
-
-            migrationBuilder.DropTable(
-                name: "AppUsers");
 
             migrationBuilder.DropTable(
                 name: "BusinessListing");

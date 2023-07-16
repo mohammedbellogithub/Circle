@@ -29,11 +29,7 @@ namespace Circle.Shared.Helpers
                 SYS_ADMIN,
                 ADMIN,
                 DEFAULT,
-                //HR,
-                //ACCOUNTANT,
-                //ACADEMY,
                 FRONTDESK
-                //SALES
             };
         }
     }

@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using Circle.Core.Services.Email;
 using Circle.Core.Services.Cache;
+using Circle.Core.Components.Policy;
 
 namespace Circle.Api
 {
@@ -33,6 +34,7 @@ namespace Circle.Api
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<ICacheService, CacheService>();
+            builder.Services.AddTransient<IAuthorizationHandler, PermissionsAuthorizationHandler>();
 
 
             return builder;
