@@ -1,5 +1,6 @@
 ﻿using Circle.Shared.Enums;
 using Circle.Shared.Models.UserIdentity;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,5 +67,42 @@ namespace Circle.Core.ViewModels.User
             return destination;
         }
 
+    }
+
+    public class EditUserViewModel
+    {
+        public string Username { get; set; }
+        public string FirstName { get; set;}
+        public string LastName { get; set;}
+        public string MiddleName { get; set; }
+        public Gender Gender { get; set; }
+        public string PhoneNumber { get; set; }
+
+    }
+
+    public class UserDetailsViewModel
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string MiddleName { get; set; }
+        public string Email { get; set; }
+        public string UserName { get; set; }
+        public string PhoneNumber { get; set; }
+        public int Gender { get; set; }
+        public DateTime CreatedOn { get; set; } 
+        public string Location { get; set; }
+        public string ProfilePictureUrl { get; set; }
+        public string BannerPictureUrl { get; set; }
+        public string Bio { get; set; }
+
+    }
+
+    public class SetUserProfileViewModel
+    {
+        public string ProfileName { get; set; }
+        public IFormFile ProfilePicture { get; set; }
+        public IFormFile BannerPicture { get; set; }
+        public string Location { get; set; }
+        public string Bio { get; set; }
     }
 }

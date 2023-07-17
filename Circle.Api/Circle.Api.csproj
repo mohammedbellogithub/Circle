@@ -69,6 +69,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Sql\Sprocs\sp_get_user_profile.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Sql\Sprocs\sp_get_users.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

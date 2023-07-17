@@ -13,6 +13,7 @@ using System.Data;
 using Circle.Core.Services.Email;
 using Circle.Core.Services.Cache;
 using Circle.Core.Components.Policy;
+using Circle.Core.Registration;
 
 namespace Circle.Api
 {
@@ -29,8 +30,9 @@ namespace Circle.Api
                 options.UseSqlServer(connectionstring);
             });
 
-           
-            // Add services to the container.
+
+            // Add services to the container
+            RepositoryRegistration.RepositoryRegDI(builder);
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<ICacheService, CacheService>();

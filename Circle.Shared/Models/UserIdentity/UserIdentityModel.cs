@@ -1,4 +1,5 @@
-﻿using Circle.Shared.Utils;
+﻿using Circle.Shared.Models.Users;
+using Circle.Shared.Utils;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,8 @@ namespace Circle.Shared.Models.UserIdentity
         public string? Department { get; set; }
         public bool? IsPasswordDefault { get; set; }
         public string? StaffNo { get; set; }
+        public UserProfile UserProfile { get; set; } 
+
     }
 
     public class AppUserClaims : IdentityUserClaim<Guid>
