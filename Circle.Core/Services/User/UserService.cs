@@ -1,10 +1,13 @@
 ﻿using Circle.Core.Dtos.User;
+using Circle.Core.Repository.Abstraction;
 using Circle.Core.Services.Cache;
 using Circle.Core.ViewModels.User;
 using Circle.Shared.Dapper;
 using Circle.Shared.Dapper.Interfaces;
+using Circle.Shared.Extensions;
 using Circle.Shared.Helpers;
 using Circle.Shared.Models.UserIdentity;
+using Circle.Shared.Models.Users;
 using Circle.Shared.Utils;
 using Dapper;
 using Microsoft.AspNetCore.Identity;
@@ -18,17 +21,20 @@ namespace Circle.Core.Services.User
         private readonly UserManager<AppUsers> _userManager;
         private readonly RoleManager<AppRoles> _roleManager;
         private readonly ICacheService _cacheService;
+        private readonly IUserProfileRepository _userProfileRepository;
 
 
         public UserService(
             UserManager<AppUsers> userManager,
             RoleManager<AppRoles> roleManager,
             IUnitOfWork iuow,
-            ICacheService cacheService) : base(iuow)
+            ICacheService cacheService,
+            IUserProfileRepository userProfileRepository) : base(iuow)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _cacheService = cacheService;
+            _userProfileRepository = userProfileRepository;
         }
 
         public async Task<UserResponseViewModel?> SignUpAsync(UserRegisterationViewModel viewModel)
@@ -36,6 +42,18 @@ namespace Circle.Core.Services.User
             //check if model is valid
             if (!base.IsValid(viewModel))
                 return null;
+
+            if (!viewModel.PhoneNumber.IsValidPhoneNumber())
+            {
+                base.Results.Add(new ValidationResult($"Invalid phone number format"));
+                return null;
+            }
+
+            if (!viewModel.Email.IsValidEmail())
+            {
+                base.Results.Add(new ValidationResult($"Invalid email address format"));
+                return null;
+            }
 
             //check if the user exists
             var userExists = _userManager.Users.FirstOrDefault(x => x.FirstName == viewModel.FirstName
@@ -102,7 +120,12 @@ namespace Circle.Core.Services.User
                 base.Results.AddRange(createResult.Errors.Select(e => new ValidationResult(e.Description)));
                 return default;
             }
-            user.CreatedOn = DateTime.Now;
+
+            //set userProfile
+            var profile = new UserProfile();
+            profile.UserAccountId = user.Id;
+
+            await _userProfileRepository.AddAsync(profile);
 
             var token = RandomGenerator.GenerateRandomNumber(6);
             _cacheService.SetCacheInfo(user.Email, token, duration: 5);
@@ -131,6 +154,18 @@ namespace Circle.Core.Services.User
 
         public async Task<UserResponseViewModel?> AddUserAsync(UserRegisterationViewModel viewModel)
         {
+            if (!viewModel.PhoneNumber.IsValidPhoneNumber())
+            {
+                base.Results.Add(new ValidationResult($"Invalid phone number format"));
+                return null;
+            }
+
+            if (!viewModel.Email.IsValidEmail())
+            {
+                base.Results.Add(new ValidationResult($"Invalid email address format"));
+                return null;
+            }
+
             //check if the user exists
             var userExists = _userManager.Users.FirstOrDefault(x => x.FirstName == viewModel.FirstName
                                                 && x.LastName == viewModel.LastName
@@ -278,7 +313,7 @@ namespace Circle.Core.Services.User
 
             if (!correctPassword)
             {
-                ++user.AccessFailedCount;
+                await _userManager.AccessFailedAsync(user);
                 await _userManager.UpdateAsync(user);
                 base.Results.Add(new ValidationResult($"Kindly ensure that your password is correct. Thank you "));
                 return null;
@@ -361,6 +396,96 @@ namespace Circle.Core.Services.User
             user.IsDeleted = true;
             user.Activated = false;
             await _userManager.UpdateAsync(user);
+        }
+
+        public async Task EditUserAccount(EditUserViewModel viewModel)
+        {
+            if (!viewModel.PhoneNumber.IsValidPhoneNumber())
+            {
+                base.Results.Add(new ValidationResult($"Invalid phone number format"));
+                return;
+            }
+            var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
+
+            if (user is null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult($"User account not found. Kindly contact technical support."));
+                return;
+            }
+            
+            //check if username is taken
+            var userNameTaken = await _userManager.FindByNameAsync(viewModel.Username);
+
+            if (userNameTaken != null && user.UserName != viewModel.Username)
+            {
+                base.Results.Add(new ValidationResult($"Username: {viewModel.Username} is already Taken, Kindly choose another"));
+                return;
+            }
+
+            //check if phone number exists
+            var phoneExists = await _userManager.Users.FirstOrDefaultAsync(x => x.PhoneNumber == viewModel.PhoneNumber);
+            if (phoneExists != null && user.PhoneNumber != viewModel.PhoneNumber)
+            {
+                base.Results.Add(new ValidationResult($"There is an account registered with this Phone number: {viewModel.PhoneNumber}, Kindly reconfirm."));
+                return;
+            }
+
+            user.PhoneNumber = viewModel.PhoneNumber;
+            user.UserName = viewModel.Username;
+            user.FirstName = viewModel.FirstName;
+            user.LastName = viewModel.LastName;
+            user.Gender = (int)viewModel.Gender;
+            user.MiddleName = viewModel.MiddleName;
+            user.ModifiedBy = user.Email;
+            user.ModifiedOn = DateTime.Now;
+
+            await _userManager.UpdateAsync(user);
+        }
+
+        public  Task<UserDto?> GetUserDetails(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<UserDetailsViewModel?> UserBioDetails()
+        {
+            var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
+
+            if (user == null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
+                return null;
+            }
+
+            var userProfile = await _userProfileRepository.GetUserProfile<UserDetailsViewModel>(user.Id);
+
+            if (userProfile == null)
+            {
+                base.Results.Add(new ValidationResult("Kindly set up your Circle profile"));
+                return null;
+            }
+
+            return userProfile;
+        }
+
+        public async Task SetProfile(SetUserProfileViewModel viewModel)
+        {
+            var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
+
+            if (user == null || user.IsDeleted)
+            {
+                base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
+                return;
+            }
+
+            var Successfull = await _userProfileRepository.SetProfile(viewModel, user.Id);
+
+            if (!Successfull)
+            {
+                base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
+                return;
+            }
+            //var userProfile = await _userRepository.GetUserProfile<UserDetailsViewModel>(user.Id);
         }
     }
 }

@@ -221,6 +221,30 @@ namespace Circle.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserProfile",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProfileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: true),
+                    ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BannerPictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfile", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserProfile_AppUsers_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BusinessCategory",
                 columns: table => new
                 {
@@ -386,10 +410,10 @@ namespace Circle.Shared.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "CreatedBy", "CreatedOn", "IsInBuilt", "ModifiedBy", "ModifiedOn", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), "79b7c6d29e404a959def18b75ca7b18a", null, null, true, null, null, "SYS_ADMIN", "SYS_ADMIN" },
-                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), "80aa50c42af1486da89a384945651dd0", null, null, true, null, null, "FRONTDESK", "FRONTDESK" },
-                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), "0a9264319efa437a9083bce9fcdf97ee", null, null, true, null, null, "ADMIN", "ADMIN" },
-                    { new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"), "903d3a51670e4719b78269ceb6a29154", null, null, true, null, null, "DEFAULT", "DEFAULT" }
+                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), "178484085cc7404b922107e26afd9731", null, null, true, null, null, "SYS_ADMIN", "SYS_ADMIN" },
+                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), "152f758736914f7fa10adc508f47fe7c", null, null, true, null, null, "FRONTDESK", "FRONTDESK" },
+                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), "4d604a1de8fc4a3c8985af6e1905743b", null, null, true, null, null, "ADMIN", "ADMIN" },
+                    { new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"), "a03e87f0d2e349a28b05fb6f2c4f1023", null, null, true, null, null, "DEFAULT", "DEFAULT" }
                 });
 
             migrationBuilder.InsertData(
@@ -407,11 +431,16 @@ namespace Circle.Shared.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Activated", "ConcurrencyStamp", "CreatedBy", "CreatedOn", "DeletedBy", "DeletedOn", "Department", "Email", "EmailConfirmed", "FirstName", "Gender", "IsDeleted", "IsPasswordDefault", "LastLoginDate", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "ModifiedBy", "ModifiedOn", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProviderKey", "RefreshToken", "SecurityStamp", "StaffNo", "TwoFactorEnabled", "Unit", "UserName", "UserType", "UserTypeId" },
                 values: new object[,]
                 {
-                    { new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"), 0, true, "45925e43-2da0-4406-85f9-5fc04931b8d9", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "mohammedbello678@gmail.com", true, "Mohammed", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "MOHAMMEDBELLO678@GMAIL.COM", "MOHAMMEDBELLO678@GMAIL.COM", "AQAAAAEAACcQAAAAEJVQmfwiuKctp9UO46je1vOwtVn9P4ejz1HNdhuRdPAXw7l/1ZPHt0x9uWgjIQXqeQ==", "09025055210", true, null, null, "318338a4-8f26-47d7-bb01-66b8784aeae6", null, false, null, "mohammedbello678@gmail.com", null, null },
-                    { new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"), 0, true, "78e4f500-6c6f-4b34-8e55-ce656f082fe6", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "system@innercircle.com", true, "John", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Doe", false, null, null, null, null, "SYSTEM@INNERCIRCLE.COM", "SYSTEM@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEOAJi8ZBExzVsDrbwbYFINypUpgc9vTWFg3I6kez+dayxhmcGceXHAcd05SDiA1v1A==", "08108565760", true, null, null, "3c147856-b944-49f7-8c03-86eab5feadac", null, false, null, "system@innercircle.com", null, null },
-                    { new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"), 0, true, "528ca840-8a9a-4645-af87-ce93cc0595f1", null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "frontdesk@innercircle.com", true, "babatunde", null, false, null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "FRONTDESK@INNERCIRCLE.COM", "FRONTDESK@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEBCpyx60s5wN3f7uDn4rjy1S5pJTPwXFuDfwX328xCItZlw26Uxtyhq+mX7X5P2Qrw==", "+2349025055210", true, null, null, "81b94cda-96bb-43e0-ac86-6d4a3de474f9", null, false, null, "frontdesk@innercircle.com", null, null },
-                    { new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"), 0, true, "8b28b312-bcba-4d10-a325-691a147c4e5d", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@innercircle.com", true, "", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, null, null, null, "ADMIN@INNERCIRCLE.COM", "ADMIN@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAELxsUkPQZvhNXK4SPCp2YlC9m73aNN0eQN7uWO075l1JQzFXqSY5IZMYJSSbxwnbsQ==", "09025055210", true, null, null, "d2db0156-280e-4867-9795-8303362024dd", null, false, null, "admin@innercircle.com", null, null }
+                    { new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"), 0, true, "512ac03b-2bdc-4e35-9bb5-03a60aded6b1", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "mohammedbello678@gmail.com", true, "Mohammed", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "MOHAMMEDBELLO678@GMAIL.COM", "MOHAMMEDBELLO678@GMAIL.COM", "AQAAAAEAACcQAAAAEE8oNY0xHjCSRHAIfjy8JgyEqoq2EtWcQtZjGN9iEX4CIkyp3XxPLtq7XcLwIlBkLQ==", "09025055210", true, null, null, "318338a4-8f26-47d7-bb01-66b8784aeae6", null, false, null, "mohammedbello678@gmail.com", null, null },
+                    { new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"), 0, true, "94cb2ddf-240a-4213-9c6d-84b844f39021", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "system@innercircle.com", true, "John", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Doe", false, null, null, null, null, "SYSTEM@INNERCIRCLE.COM", "SYSTEM@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEAox/FAGYhGtHKLhMMsFdLAuFi7fNPRtyLhve7U5oAKNCIUQlS17AF0QQ+M4gdV8Fw==", "08108565760", true, null, null, "3c147856-b944-49f7-8c03-86eab5feadac", null, false, null, "system@innercircle.com", null, null },
+                    { new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"), 0, true, "46a419e4-5c7b-4c20-a17a-eb9e96c3088a", null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "frontdesk@innercircle.com", true, "babatunde", null, false, null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "FRONTDESK@INNERCIRCLE.COM", "FRONTDESK@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEH/Qr89oS7k+FfMdieIXqFMvrGvnh+wpjvGFW6YMEtbyrRtVIeVd6hmC+l+aWBGdZA==", "+2349025055210", true, null, null, "81b94cda-96bb-43e0-ac86-6d4a3de474f9", null, false, null, "frontdesk@innercircle.com", null, null },
+                    { new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"), 0, true, "2037a2cd-ddf2-499a-891b-864062bef2ee", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@innercircle.com", true, "", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, null, null, null, "ADMIN@INNERCIRCLE.COM", "ADMIN@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEKqXKw63GWFeoEHjjzeJFAt7jFB8CAAVRCrnloz64Fs16ijEIPWO0+ZpWABeBySNoA==", "09025055210", true, null, null, "d2db0156-280e-4867-9795-8303362024dd", null, false, null, "admin@innercircle.com", null, null }
                 });
+
+            migrationBuilder.InsertData(
+                table: "UserProfile",
+                columns: new[] { "Id", "BannerPictureUrl", "Bio", "IsVerified", "Location", "ProfileName", "ProfilePictureUrl", "UserAccountId" },
+                values: new object[] { new Guid("3100f13f-25d8-4fd7-afde-1abd8a0d2354"), "https://twitter.com/Mohammed_kingin", "The Circle management public profile", true, "Nigria", "CIRCLE", "https://twitter.com/Mohammed_kingin", new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusinessCategory_BusinessId",
@@ -463,6 +492,12 @@ namespace Circle.Shared.Migrations
                 column: "ReferenceId",
                 unique: true,
                 filter: "[ReferenceId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProfile_UserAccountId",
+                table: "UserProfile",
+                column: "UserAccountId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -483,9 +518,6 @@ namespace Circle.Shared.Migrations
                 name: "AppUserRoles");
 
             migrationBuilder.DropTable(
-                name: "AppUsers");
-
-            migrationBuilder.DropTable(
                 name: "AppUserTokens");
 
             migrationBuilder.DropTable(
@@ -498,10 +530,16 @@ namespace Circle.Shared.Migrations
                 name: "OpenIddictTokens");
 
             migrationBuilder.DropTable(
+                name: "UserProfile");
+
+            migrationBuilder.DropTable(
                 name: "BusinessListing");
 
             migrationBuilder.DropTable(
                 name: "OpenIddictAuthorizations");
+
+            migrationBuilder.DropTable(
+                name: "AppUsers");
 
             migrationBuilder.DropTable(
                 name: "BusinessCategory");

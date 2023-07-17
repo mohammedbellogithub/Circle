@@ -30,6 +30,7 @@ namespace Circle.Shared.Context
             modelBuilder.ApplyConfiguration(new AppUserLoginMap());
             modelBuilder.ApplyConfiguration(new AppUserTokenMap());
             modelBuilder.ApplyConfiguration(new AppUserClaimMap());
+            modelBuilder.ApplyConfiguration(new UserProfileMap());
             modelBuilder.UseOpenIddict<CircleOpenIddictApplication, CircleOpenIddictAuthorization, CircleOpenIddictScope, CircleOpenIddictToken, Guid>();
         }
 

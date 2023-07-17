@@ -13,6 +13,10 @@ namespace Circle.Core.Services.User
 {
     public interface IUserService : IService<AppUsers>
     {
+        Task SetProfile(SetUserProfileViewModel viewModel);
+        Task<UserDto?> GetUserDetails(Guid id);
+        Task<UserDetailsViewModel?> UserBioDetails();
+        Task EditUserAccount(EditUserViewModel viewModel);
         Task DeleteUserAccountAsync(string userId);
         Task DeactivateUserAsync(string userId);
         Task SelfDeactivateAsync();

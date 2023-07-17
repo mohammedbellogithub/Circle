@@ -5,10 +5,7 @@ using Circle.Core.ViewModels.User;
 using Circle.Shared.Constants;
 using Circle.Shared.Enums;
 using Circle.Shared.Extensions;
-using Circle.Shared.Models.UserIdentity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Circle.Api.Controllers
@@ -17,7 +14,7 @@ namespace Circle.Api.Controllers
     /// 
     /// </summary>
     [Route("api/[controller]")]
-    public class UserManagementController : BaseController
+    public class UserAccountController : BaseController
     {
         /// <summary>
         /// 
@@ -29,7 +26,7 @@ namespace Circle.Api.Controllers
         /// </summary>
         /// <param name="userService"></param>
         /// <param name="emailService"></param>
-        public UserManagementController(IUserService userService, IEmailService emailService)
+        public UserAccountController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
             _emailService = emailService;
@@ -178,6 +175,11 @@ namespace Circle.Api.Controllers
             return ApiResponse( result
             , "OTP Verification successful");
         }
+        /// <summary>
+        /// resend OTP
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("resend-otp")]
         public async Task<IActionResult> ResendVerificationOTP(string email)
@@ -281,6 +283,29 @@ namespace Circle.Api.Controllers
             //send mail
         }
         /// <summary>
+        /// Edit user account
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        [RequiresPermission(Permission.FULL_DEFAULT_USER_CONTROL)]
+        [HttpPut("edit-user-account")]
+        public async Task<IActionResult> EditUserAccount([FromBody] EditUserViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                return EmptyPayloadResponse();
+            }
+
+            await _userService.EditUserAccount(viewModel);
+
+            if (_userService.HasError)
+            {
+                return ApiResponse(null, _userService.Errors, ApiResponseCodes.ERROR);
+            }
+
+            return ApiResponse(null, "User account edited successfully");
+        }
+        /// <summary>
         ///  Delete user account
         /// </summary>
         /// <param name="userId"></param>
@@ -300,6 +325,5 @@ namespace Circle.Api.Controllers
 
             //send mail
         }
-
     }
 }
