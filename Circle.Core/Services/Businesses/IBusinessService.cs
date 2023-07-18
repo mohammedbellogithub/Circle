@@ -11,6 +11,7 @@ namespace Circle.Core.Services.Businesses
 {
     public interface IBusinessService : IService<Business>
     {
+        Task<BusinessResponseViewModel?> GetBusinessDetail(Guid id);
         Task<IEnumerable<BusinessResponseViewModel?>> GetUserBusinesses();
         Task CreateBusiness(CreateBusinessViewModel viewModel);
         Task UpdateBusiness(EditBusinessViewModel viewModel);

@@ -16,6 +16,21 @@ namespace Circle.Api.Controllers
             _businessService = businessService;
         }
 
+        [HttpGet("get-businessById")]
+        public async Task<IActionResult> GetUserBusinessById(Guid Id)
+        {
+
+            var result = await _businessService.GetBusinessDetail(Id);
+
+            if (_businessService.HasError)
+            {
+                return ApiResponse(null, _businessService.Errors, ApiResponseCodes.ERROR);
+            }
+
+            return ApiResponse(result, "Successful", ApiResponseCodes.OK);
+
+        }
+
         [HttpGet("get-user-businesses")]
         public async Task<IActionResult> GetUserBusinesses()
         {

@@ -44,6 +44,15 @@ namespace Circle.Core.Services.Businesses
             await this.AddAsync(business);
         }
 
+        public async Task<BusinessResponseViewModel?> GetBusinessDetail(Guid id)
+        {
+            var userId= Guid.Parse(WebHelpers.CurrentUser.UserId);
+           
+            var response = await _businessRepository.GetBusinessByIdAsync<BusinessResponseViewModel>(id, userId);
+
+            return response;
+        }
+
         public async Task<IEnumerable<BusinessResponseViewModel?>> GetUserBusinesses()
         {
             var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
