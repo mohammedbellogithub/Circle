@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Circle.Shared.Migrations
 {
-    public partial class initial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -147,36 +147,6 @@ namespace Circle.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Business",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BusinessType = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Verified = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Business", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OpenIddictApplications",
                 columns: table => new
                 {
@@ -221,6 +191,44 @@ namespace Circle.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Business",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BusinessType = table.Column<int>(type: "int", nullable: false),
+                    NatureOfBusiness = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Verified = table.Column<bool>(type: "bit", nullable: false),
+                    UserAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Business", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Business_AppUsers_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserProfile",
                 columns: table => new
                 {
@@ -228,7 +236,7 @@ namespace Circle.Shared.Migrations
                     ProfileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsVerified = table.Column<bool>(type: "bit", nullable: true),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: false),
                     ProfilePictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BannerPictureUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -240,35 +248,6 @@ namespace Circle.Shared.Migrations
                         name: "FK_UserProfile_AppUsers_UserAccountId",
                         column: x => x.UserAccountId,
                         principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "BusinessCategory",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UniqueIdentiferCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentBusinessCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_BusinessCategory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_BusinessCategory_Business_BusinessId",
-                        column: x => x.BusinessId,
-                        principalTable: "Business",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -298,19 +277,15 @@ namespace Circle.Shared.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BusinessListing",
+                name: "BusinessCategory",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UniqueIdentiferCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Unit = table.Column<int>(type: "int", nullable: true),
-                    Ratings = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DiscountPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Discounted = table.Column<bool>(type: "bit", nullable: false),
-                    BusinessCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ParentBusinessCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BusinessId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -321,11 +296,11 @@ namespace Circle.Shared.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BusinessListing", x => x.Id);
+                    table.PrimaryKey("PK_BusinessCategory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BusinessListing_BusinessCategory_BusinessCategoryId",
-                        column: x => x.BusinessCategoryId,
-                        principalTable: "BusinessCategory",
+                        name: "FK_BusinessCategory_Business_BusinessId",
+                        column: x => x.BusinessId,
+                        principalTable: "Business",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -361,6 +336,39 @@ namespace Circle.Shared.Migrations
                         column: x => x.AuthorizationId,
                         principalTable: "OpenIddictAuthorizations",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BusinessListing",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Unit = table.Column<int>(type: "int", nullable: true),
+                    Ratings = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DiscountPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discounted = table.Column<bool>(type: "bit", nullable: false),
+                    BusinessCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BusinessListing", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BusinessListing_BusinessCategory_BusinessCategoryId",
+                        column: x => x.BusinessCategoryId,
+                        principalTable: "BusinessCategory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -410,10 +418,10 @@ namespace Circle.Shared.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "CreatedBy", "CreatedOn", "IsInBuilt", "ModifiedBy", "ModifiedOn", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), "178484085cc7404b922107e26afd9731", null, null, true, null, null, "SYS_ADMIN", "SYS_ADMIN" },
-                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), "152f758736914f7fa10adc508f47fe7c", null, null, true, null, null, "FRONTDESK", "FRONTDESK" },
-                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), "4d604a1de8fc4a3c8985af6e1905743b", null, null, true, null, null, "ADMIN", "ADMIN" },
-                    { new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"), "a03e87f0d2e349a28b05fb6f2c4f1023", null, null, true, null, null, "DEFAULT", "DEFAULT" }
+                    { new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"), "be8a48cf4bdd429e8ded3415f8f8a603", null, null, true, null, null, "SYS_ADMIN", "SYS_ADMIN" },
+                    { new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"), "1023394fbec64ec28417350292f5eba9", null, null, true, null, null, "FRONTDESK", "FRONTDESK" },
+                    { new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"), "86f9867305d543eaa873619333f71e75", null, null, true, null, null, "ADMIN", "ADMIN" },
+                    { new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"), "d288be2c81d24260b4c8dd269d4c5875", null, null, true, null, null, "DEFAULT", "DEFAULT" }
                 });
 
             migrationBuilder.InsertData(
@@ -431,16 +439,21 @@ namespace Circle.Shared.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Activated", "ConcurrencyStamp", "CreatedBy", "CreatedOn", "DeletedBy", "DeletedOn", "Department", "Email", "EmailConfirmed", "FirstName", "Gender", "IsDeleted", "IsPasswordDefault", "LastLoginDate", "LastName", "LockoutEnabled", "LockoutEnd", "MiddleName", "ModifiedBy", "ModifiedOn", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProviderKey", "RefreshToken", "SecurityStamp", "StaffNo", "TwoFactorEnabled", "Unit", "UserName", "UserType", "UserTypeId" },
                 values: new object[,]
                 {
-                    { new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"), 0, true, "512ac03b-2bdc-4e35-9bb5-03a60aded6b1", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "mohammedbello678@gmail.com", true, "Mohammed", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "MOHAMMEDBELLO678@GMAIL.COM", "MOHAMMEDBELLO678@GMAIL.COM", "AQAAAAEAACcQAAAAEE8oNY0xHjCSRHAIfjy8JgyEqoq2EtWcQtZjGN9iEX4CIkyp3XxPLtq7XcLwIlBkLQ==", "09025055210", true, null, null, "318338a4-8f26-47d7-bb01-66b8784aeae6", null, false, null, "mohammedbello678@gmail.com", null, null },
-                    { new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"), 0, true, "94cb2ddf-240a-4213-9c6d-84b844f39021", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "system@innercircle.com", true, "John", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Doe", false, null, null, null, null, "SYSTEM@INNERCIRCLE.COM", "SYSTEM@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEAox/FAGYhGtHKLhMMsFdLAuFi7fNPRtyLhve7U5oAKNCIUQlS17AF0QQ+M4gdV8Fw==", "08108565760", true, null, null, "3c147856-b944-49f7-8c03-86eab5feadac", null, false, null, "system@innercircle.com", null, null },
-                    { new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"), 0, true, "46a419e4-5c7b-4c20-a17a-eb9e96c3088a", null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "frontdesk@innercircle.com", true, "babatunde", null, false, null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "FRONTDESK@INNERCIRCLE.COM", "FRONTDESK@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEH/Qr89oS7k+FfMdieIXqFMvrGvnh+wpjvGFW6YMEtbyrRtVIeVd6hmC+l+aWBGdZA==", "+2349025055210", true, null, null, "81b94cda-96bb-43e0-ac86-6d4a3de474f9", null, false, null, "frontdesk@innercircle.com", null, null },
-                    { new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"), 0, true, "2037a2cd-ddf2-499a-891b-864062bef2ee", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@innercircle.com", true, "", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, null, null, null, "ADMIN@INNERCIRCLE.COM", "ADMIN@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEKqXKw63GWFeoEHjjzeJFAt7jFB8CAAVRCrnloz64Fs16ijEIPWO0+ZpWABeBySNoA==", "09025055210", true, null, null, "d2db0156-280e-4867-9795-8303362024dd", null, false, null, "admin@innercircle.com", null, null }
+                    { new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"), 0, true, "30271464-53b6-47e8-9812-2ab9b8280b37", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "mohammedbello678@gmail.com", true, "Mohammed", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "MOHAMMEDBELLO678@GMAIL.COM", "MOHAMMEDBELLO678@GMAIL.COM", "AQAAAAEAACcQAAAAEHC9NLqqE9dsPGSMipkqo0folVl2kJpBuJVFsgtesytpmP3TxgZmPotwCn7on9FNwA==", "09025055210", true, null, null, "318338a4-8f26-47d7-bb01-66b8784aeae6", null, false, null, "mohammedbello678@gmail.com", null, null },
+                    { new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"), 0, true, "abfa5efd-3041-4975-9cdb-c32d2db53048", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "system@innercircle.com", true, "John", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Doe", false, null, null, null, null, "SYSTEM@INNERCIRCLE.COM", "SYSTEM@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEBziEJFv+QWog311hBmEJvqqQITaZWa8Jl+AqTao41xSFPYU+rPtsAft+pSuosIqTg==", "08108565760", true, null, null, "3c147856-b944-49f7-8c03-86eab5feadac", null, false, null, "system@innercircle.com", null, null },
+                    { new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"), 0, true, "0d65159b-39a3-45f5-9653-74c8924d7133", null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "frontdesk@innercircle.com", true, "babatunde", null, false, null, new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Bello", false, null, null, null, null, "FRONTDESK@INNERCIRCLE.COM", "FRONTDESK@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEJRWi6RMwM94A0VW78JJinKTX1Us0zd/nLwuC5f/rYAVEfxIKwv6RfPLEz8hh7CX/A==", "+2349025055210", true, null, null, "81b94cda-96bb-43e0-ac86-6d4a3de474f9", null, false, null, "frontdesk@innercircle.com", null, null },
+                    { new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"), 0, true, "41156fd1-fa97-4872-a577-50c82c424ee6", null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), null, null, null, "admin@innercircle.com", true, "", null, false, null, new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin", false, null, null, null, null, "ADMIN@INNERCIRCLE.COM", "ADMIN@INNERCIRCLE.COM", "AQAAAAEAACcQAAAAEFo0KWll9JgxLOw/gy6aiB7gtvD5jOGUWN02PK1fNy6eCUCHj3y2CXpdKUS+xqs5hw==", "09025055210", true, null, null, "d2db0156-280e-4867-9795-8303362024dd", null, false, null, "admin@innercircle.com", null, null }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserProfile",
                 columns: new[] { "Id", "BannerPictureUrl", "Bio", "IsVerified", "Location", "ProfileName", "ProfilePictureUrl", "UserAccountId" },
-                values: new object[] { new Guid("3100f13f-25d8-4fd7-afde-1abd8a0d2354"), "https://twitter.com/Mohammed_kingin", "The Circle management public profile", true, "Nigria", "CIRCLE", "https://twitter.com/Mohammed_kingin", new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e") });
+                values: new object[] { new Guid("a91f8725-c91e-4ff2-8288-610945c5c9d5"), "https://twitter.com/Mohammed_kingin", "The Circle management public profile", true, "Nigria", "CIRCLE", "https://twitter.com/Mohammed_kingin", new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e") });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Business_UserAccountId",
+                table: "Business",
+                column: "UserAccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BusinessCategory_BusinessId",
@@ -539,9 +552,6 @@ namespace Circle.Shared.Migrations
                 name: "OpenIddictAuthorizations");
 
             migrationBuilder.DropTable(
-                name: "AppUsers");
-
-            migrationBuilder.DropTable(
                 name: "BusinessCategory");
 
             migrationBuilder.DropTable(
@@ -549,6 +559,9 @@ namespace Circle.Shared.Migrations
 
             migrationBuilder.DropTable(
                 name: "Business");
+
+            migrationBuilder.DropTable(
+                name: "AppUsers");
         }
     }
 }

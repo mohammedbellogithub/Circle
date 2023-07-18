@@ -11,6 +11,8 @@ namespace Circle.Core.Registration
         {
             var services = builder.Services;
             services.AddTransient<IUserProfileRepository, UserProfileRepository>();
+            services.AddTransient<IBusinessRepository, BusinessRepository>();
+
             return builder;
         }
     }

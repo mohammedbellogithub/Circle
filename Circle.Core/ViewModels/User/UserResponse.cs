@@ -91,6 +91,7 @@ namespace Circle.Core.ViewModels.User
         public int Gender { get; set; }
         public DateTime CreatedOn { get; set; } 
         public string Location { get; set; }
+        public string ProfileName { get; set; }
         public string ProfilePictureUrl { get; set; }
         public string BannerPictureUrl { get; set; }
         public string Bio { get; set; }

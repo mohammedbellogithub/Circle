@@ -35,8 +35,8 @@ namespace Circle.Shared.Context
         }
 
 
-        public DbSet<Business>? Business { get; set; }
-        public DbSet<BusinessCategory>? BusinessCategory { get; set; }
+        //public DbSet<Business>? Business { get; set; }
+        //public DbSet<BusinessCategory>? BusinessCategory { get; set; }
 
 
     }

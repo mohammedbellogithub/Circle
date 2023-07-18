@@ -69,6 +69,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Sql\Sprocs\sp_get_userBusinesses.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Sql\Sprocs\sp_get_businessById.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Sql\Sprocs\sp_get_user_profile.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
