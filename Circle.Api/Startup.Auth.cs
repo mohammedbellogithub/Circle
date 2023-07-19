@@ -83,12 +83,8 @@ namespace Circle.Api
                 }
                 else
                 {
-                    //byte[] rawData = File.ReadAllBytes(Path.Combine(HostingEnvironment.ContentRootPath, "App_Data", "walure-bo.pfx"));
-                    //var x509Certificate = new X509Certificate2(rawData,
-                    //    authSettings.Password,
-                    //    X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable);
-
-                    //options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
+                    options.AddDevelopmentEncryptionCertificate()
+                    .AddDevelopmentSigningCertificate();
                 }
 
 
