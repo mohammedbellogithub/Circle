@@ -9,10 +9,23 @@ namespace Circle.Core.Services.Cache
 {
     public interface ICacheService
     {
-        void ClearCache(string key);
-        string GetCacheKey(string key);
-        T GetGenericCache<T>(string key);
+        Task<T> GetAsync<T>(string key);
+        Task<bool> SetAsync<T>(string key, T value, int duration);
+        Task ClearAsync(string key);
+        void ClearAll();
 
-        void SetCacheInfo<T>(string key, T OTP, int duration);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="key"></param>
+        /// 
+
+
+        //void ClearCache(string key);
+        //string GetCacheKey(string key);
+        //T GetGenericCache<T>(string key);
+
+        //void SetCacheInfo<T>(string key, T OTP, int duration);
     }
 }

@@ -128,7 +128,7 @@ namespace Circle.Core.Services.User
             await _userProfileRepository.AddAsync(profile);
 
             var token = RandomGenerator.GenerateRandomNumber(6);
-            _cacheService.SetCacheInfo(user.Email, token, duration: 5);
+            await _cacheService.SetAsync(user.Email, token, duration: 5);
             var response = (UserResponseViewModel)user;
             response.Token = token;
             return response;
@@ -266,7 +266,7 @@ namespace Circle.Core.Services.User
                 return false;
             }
 
-            var otp = _cacheService.GetCacheKey(user.Email);
+            var otp = await _cacheService.GetAsync<string>(user.Email);
 
             if (otp is not null && otp == code)
             {
@@ -300,7 +300,7 @@ namespace Circle.Core.Services.User
             var response = (UserResponseViewModel)user;
             
             response.Token = RandomGenerator.GenerateRandomNumber(6);
-            _cacheService.SetCacheInfo(user.Email, response.Token, duration: 5);
+            await _cacheService.SetAsync(user.Email, response.Token, duration: 5);
 
             return response;
         }

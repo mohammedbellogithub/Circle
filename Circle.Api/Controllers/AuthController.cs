@@ -209,7 +209,7 @@ namespace Circle.Api.Controllers
         private async Task CacheUserPermission(string userId, Claim[] permissionClaims)
         {
             //clears memory cache allocated for specified user
-             _cacheService.ClearCache(userId);
+             await _cacheService.ClearAsync(userId);
 
             var permissions = from pc in permissionClaims
                               select new PermissionProperties
@@ -218,7 +218,7 @@ namespace Circle.Api.Controllers
                                   Id = pc.Value
                               };
 
-             _cacheService.SetCacheInfo(userId, permissions, 300);
+            await _cacheService.SetAsync(userId, permissions, 300);
         }
 
         /// <summary>

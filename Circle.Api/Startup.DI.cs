@@ -15,6 +15,7 @@ using Circle.Core.Services.Cache;
 using Circle.Core.Components.Policy;
 using Circle.Core.Registration;
 using Circle.Core.Services.Businesses;
+using StackExchange.Redis;
 
 namespace Circle.Api
 {
@@ -23,6 +24,11 @@ namespace Circle.Api
         public static WebApplicationBuilder RegisterDI(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers();
+
+            var redisMultiplexer = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
+            builder.Services.AddSingleton<IConnectionMultiplexer>(redisMultiplexer);
+            builder.Services.AddSingleton<ICacheService, CacheService>();
+
 
             builder.Services.AddDbContext<CircleDbContext>(options =>
             {
@@ -36,7 +42,6 @@ namespace Circle.Api
             RepositoryRegistration.RepositoryRegDI(builder);
             builder.Services.AddTransient<IUserService, UserService>();
             builder.Services.AddTransient<IEmailService, EmailService>();
-            builder.Services.AddTransient<ICacheService, CacheService>();
             builder.Services.AddTransient<IAuthorizationHandler, PermissionsAuthorizationHandler>();
             builder.Services.AddTransient<IBusinessService, BusinessService>();
 

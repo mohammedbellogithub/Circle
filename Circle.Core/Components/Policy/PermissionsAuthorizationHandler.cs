@@ -29,7 +29,7 @@ namespace Circle.Core.Components.Policy
                 context.Succeed(requirement);
 
             var userId = context.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-            var cachedPermission =  _cacheService.GetGenericCache<IEnumerable<PermissionProperties>>(key: userId);
+            var cachedPermission = await _cacheService.GetAsync<IEnumerable<PermissionProperties>>(key: userId);
 
 
             if (cachedPermission != null)
