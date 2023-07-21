@@ -81,6 +81,9 @@
     <None Update="Sql\Sprocs\sp_get_users.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Sql\Tables\01.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Sql\Tables\01_.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

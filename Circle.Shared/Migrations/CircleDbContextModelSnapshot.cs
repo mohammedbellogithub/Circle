@@ -560,7 +560,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("773a3af2-cd9f-4f65-869f-0cfdc1e1589e"),
-                            ConcurrencyStamp = "be8a48cf4bdd429e8ded3415f8f8a603",
+                            ConcurrencyStamp = "52a505de7c8f460e8b077f068f4c87df",
                             IsInBuilt = true,
                             Name = "SYS_ADMIN",
                             NormalizedName = "SYS_ADMIN"
@@ -568,7 +568,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("cc785f2a-2c0a-4648-87b7-a500084a2c1a"),
-                            ConcurrencyStamp = "86f9867305d543eaa873619333f71e75",
+                            ConcurrencyStamp = "de8e4409562f42c8abb253d603c435f3",
                             IsInBuilt = true,
                             Name = "ADMIN",
                             NormalizedName = "ADMIN"
@@ -576,7 +576,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("ca7061a2-138c-45b7-870c-699caa9ca99b"),
-                            ConcurrencyStamp = "1023394fbec64ec28417350292f5eba9",
+                            ConcurrencyStamp = "4c6c992309dc4d4289f2bc1612ef20ec",
                             IsInBuilt = true,
                             Name = "FRONTDESK",
                             NormalizedName = "FRONTDESK"
@@ -584,7 +584,7 @@ namespace Circle.Shared.Migrations
                         new
                         {
                             Id = new Guid("cf185b00-652d-4c52-a3fb-4c94cb794718"),
-                            ConcurrencyStamp = "d288be2c81d24260b4c8dd269d4c5875",
+                            ConcurrencyStamp = "f84021bed1bb4623ad904081ca31d161",
                             IsInBuilt = true,
                             Name = "DEFAULT",
                             NormalizedName = "DEFAULT"
@@ -789,7 +789,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("50b70c44-9eb7-4549-9a48-7d37809b7d8e"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "abfa5efd-3041-4975-9cdb-c32d2db53048",
+                            ConcurrencyStamp = "a62b3d3f-a9a4-481c-9e02-64bfc60f1b7b",
                             CreatedOn = new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "system@innercircle.com",
                             EmailConfirmed = true,
@@ -800,7 +800,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "SYSTEM@INNERCIRCLE.COM",
                             NormalizedUserName = "SYSTEM@INNERCIRCLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBziEJFv+QWog311hBmEJvqqQITaZWa8Jl+AqTao41xSFPYU+rPtsAft+pSuosIqTg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEKXK+IbyILb3/SzsnMuXLUh3lOiNXkx+cNNbwPhBdrCdyIZGSIPxLRWTDhr1VfTdEw==",
                             PhoneNumber = "08108565760",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "3c147856-b944-49f7-8c03-86eab5feadac",
@@ -812,7 +812,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("1743b5bd-1eb1-45b3-9630-99596b17cf53"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "30271464-53b6-47e8-9812-2ab9b8280b37",
+                            ConcurrencyStamp = "f3611cf8-249c-49ae-8ad9-fc0527003f12",
                             CreatedOn = new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "mohammedbello678@gmail.com",
                             EmailConfirmed = true,
@@ -823,7 +823,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMEDBELLO678@GMAIL.COM",
                             NormalizedUserName = "MOHAMMEDBELLO678@GMAIL.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEHC9NLqqE9dsPGSMipkqo0folVl2kJpBuJVFsgtesytpmP3TxgZmPotwCn7on9FNwA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECN+j+6LCr0gErfxuXtJ7jG3d9fYyTLmpOOd3FkuVsvE2Btv8FyTA7WlFvQSf+361g==",
                             PhoneNumber = "09025055210",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "318338a4-8f26-47d7-bb01-66b8784aeae6",
@@ -835,7 +835,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("ca5eb7a4-de1e-40a1-9c58-ac452112aa92"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "41156fd1-fa97-4872-a577-50c82c424ee6",
+                            ConcurrencyStamp = "8234c470-f49f-4e28-b31d-64d7b05a5821",
                             CreatedOn = new DateTime(2022, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@innercircle.com",
                             EmailConfirmed = true,
@@ -846,7 +846,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@INNERCIRCLE.COM",
                             NormalizedUserName = "ADMIN@INNERCIRCLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFo0KWll9JgxLOw/gy6aiB7gtvD5jOGUWN02PK1fNy6eCUCHj3y2CXpdKUS+xqs5hw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEEp+1otSh+XCSP4whrc4WtswS+cCN4wjMYgpSp7UETLw6qB6xgtszqkutCKCkZ71Eg==",
                             PhoneNumber = "09025055210",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "d2db0156-280e-4867-9795-8303362024dd",
@@ -858,7 +858,7 @@ namespace Circle.Shared.Migrations
                             Id = new Guid("96623538-0615-4d01-9023-7352bb4bb9c6"),
                             AccessFailedCount = 0,
                             Activated = true,
-                            ConcurrencyStamp = "0d65159b-39a3-45f5-9653-74c8924d7133",
+                            ConcurrencyStamp = "707a098b-9154-4226-a50b-1afcfe5b2300",
                             CreatedOn = new DateTime(2020, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "frontdesk@innercircle.com",
                             EmailConfirmed = true,
@@ -869,7 +869,7 @@ namespace Circle.Shared.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "FRONTDESK@INNERCIRCLE.COM",
                             NormalizedUserName = "FRONTDESK@INNERCIRCLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJRWi6RMwM94A0VW78JJinKTX1Us0zd/nLwuC5f/rYAVEfxIKwv6RfPLEz8hh7CX/A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENRkY8QZX9btIRk1m9oPB58J56gkoH107fPo2pPbjcRbT4w3eBka3QKPWTOVix3xgw==",
                             PhoneNumber = "+2349025055210",
                             PhoneNumberConfirmed = true,
                             SecurityStamp = "81b94cda-96bb-43e0-ac86-6d4a3de474f9",
@@ -934,7 +934,7 @@ namespace Circle.Shared.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a91f8725-c91e-4ff2-8288-610945c5c9d5"),
+                            Id = new Guid("fceb3aa6-c765-42ee-8f6b-c08c4439584f"),
                             BannerPictureUrl = "https://twitter.com/Mohammed_kingin",
                             Bio = "The Circle management public profile",
                             IsVerified = true,
