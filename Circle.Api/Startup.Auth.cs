@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Text;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace Circle.Api
 {
@@ -72,19 +74,19 @@ namespace Circle.Api
 
                 if (!authSettings.RequireHttps)
                 {
-                    options.UseAspNetCore(configure =>
-                    {
-                        configure.DisableTransportSecurityRequirement();
-                    });
-
                     //Register the signing and encryption credentials.
                     options.AddDevelopmentEncryptionCertificate()
                            .AddDevelopmentSigningCertificate();
                 }
                 else
                 {
-                    options.AddDevelopmentEncryptionCertificate()
-                    .AddDevelopmentSigningCertificate();
+                    byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                       "wwwroot","dev_cert.pfx"));
+
+                    var x509Certificate = new X509Certificate2(rawData, "1234", X509KeyStorageFlags.MachineKeySet |
+                       X509KeyStorageFlags.Exportable);
+
+                    options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
                 }
 
 
