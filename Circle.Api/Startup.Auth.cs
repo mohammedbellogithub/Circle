@@ -81,14 +81,7 @@ namespace Circle.Api
                 else
                 {
                     options.AddEphemeralEncryptionKey()
-                .AddEphemeralSigningKey();
-                    //byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
-                    //   "wwwroot","dev_cert.pfx"));
-
-                    //var x509Certificate = new X509Certificate2(rawData, "1234", X509KeyStorageFlags.MachineKeySet |
-                    //   X509KeyStorageFlags.Exportable);
-
-                    //options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
+                    .AddEphemeralSigningKey();
                 }
 
 
