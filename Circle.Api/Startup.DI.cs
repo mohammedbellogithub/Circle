@@ -27,6 +27,8 @@ namespace Circle.Api
 
             var redisMultiplexer = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection"));
             builder.Services.AddSingleton<IConnectionMultiplexer>(redisMultiplexer);
+
+
             builder.Services.AddSingleton<ICacheService, CacheService>();
 
 
