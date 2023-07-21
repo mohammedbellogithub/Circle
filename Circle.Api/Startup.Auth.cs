@@ -80,7 +80,8 @@ namespace Circle.Api
                 }
                 else
                 {
-                    options.UseAspNetCore().DisableTransportSecurityRequirement();
+                    options.AddEphemeralEncryptionKey()
+                .AddEphemeralSigningKey();
                     //byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
                     //   "wwwroot","dev_cert.pfx"));
 
