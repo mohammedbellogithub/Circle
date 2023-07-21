@@ -72,7 +72,7 @@ namespace Circle.Api
                 .SetRefreshTokenLifetime(tokenExpiry);
 
 
-                if (authSettings.RequireHttps)
+                if (!authSettings.RequireHttps)
                 {
                     //Register the signing and encryption credentials.
                     options.AddDevelopmentEncryptionCertificate()
