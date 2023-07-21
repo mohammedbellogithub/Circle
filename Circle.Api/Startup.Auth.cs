@@ -80,8 +80,8 @@ namespace Circle.Api
                 }
                 else
                 {
-                    options.AddEphemeralEncryptionKey()
-                    .AddEphemeralSigningKey();
+                    options.AddDevelopmentEncryptionCertificate()
+                            .AddDevelopmentSigningCertificate();
                 }
 
 
