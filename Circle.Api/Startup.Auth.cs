@@ -72,7 +72,7 @@ namespace Circle.Api
                 .SetRefreshTokenLifetime(tokenExpiry);
 
 
-                if (!authSettings.RequireHttps)
+                if (authSettings.RequireHttps)
                 {
                     //Register the signing and encryption credentials.
                     options.AddDevelopmentEncryptionCertificate()
@@ -80,13 +80,14 @@ namespace Circle.Api
                 }
                 else
                 {
-                    byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
-                       "wwwroot","dev_cert.pfx"));
+                    options.UseAspNetCore().DisableTransportSecurityRequirement();
+                    //byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                    //   "wwwroot","dev_cert.pfx"));
 
-                    var x509Certificate = new X509Certificate2(rawData, "1234", X509KeyStorageFlags.MachineKeySet |
-                       X509KeyStorageFlags.Exportable);
+                    //var x509Certificate = new X509Certificate2(rawData, "1234", X509KeyStorageFlags.MachineKeySet |
+                    //   X509KeyStorageFlags.Exportable);
 
-                    options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
+                    //options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
                 }
 
 
@@ -129,6 +130,7 @@ namespace Circle.Api
                 };
             }); ;
 
+            builder.Services.AddAuthorization();
 
             return builder;
         }
