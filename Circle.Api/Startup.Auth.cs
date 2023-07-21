@@ -80,8 +80,13 @@ namespace Circle.Api
                 }
                 else
                 {
-                    options.AddDevelopmentEncryptionCertificate()
-                            .AddDevelopmentSigningCertificate();
+                     byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                       "wwwroot", "dev_cert.pfx"));
+
+                    var x509Certificate = new X509Certificate2(rawData, authSettings.Password, X509KeyStorageFlags.MachineKeySet |
+                        X509KeyStorageFlags.Exportable);
+
+                    options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
                 }
 
 
