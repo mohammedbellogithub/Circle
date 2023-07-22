@@ -9,6 +9,8 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Hosting.Internal;
+using System.Security.Cryptography;
+using Org.BouncyCastle.X509;
 
 namespace Circle.Api
 {
@@ -80,13 +82,21 @@ namespace Circle.Api
                 }
                 else
                 {
-                     byte[] rawData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
-                       "wwwroot", "dev_cert.pfx"));
+                    byte[] rawEncryptionData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                      "wwwroot", "encryption-certificate.pfx"));
 
-                    var x509Certificate = new X509Certificate2(rawData, authSettings.Password, X509KeyStorageFlags.MachineKeySet |
+                    var encryptionCertificate = new X509Certificate2(rawEncryptionData, authSettings.Password, X509KeyStorageFlags.MachineKeySet |
                         X509KeyStorageFlags.Exportable);
 
-                    options.AddEncryptionCertificate(x509Certificate).AddSigningCertificate(x509Certificate);
+                    byte[] rawSigningData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                      "wwwroot", "signing-certificate.pfx"));
+
+                    var signingCertificate = new X509Certificate2(rawSigningData, authSettings.Password, X509KeyStorageFlags.MachineKeySet |
+                        X509KeyStorageFlags.Exportable);
+
+
+                    options.AddEncryptionCertificate(encryptionCertificate).AddSigningCertificate(signingCertificate);
+
                 }
 
 

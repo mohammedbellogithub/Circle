@@ -54,6 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\encryption-certificate.pfx" />
+    <None Include="wwwroot\signing-certificate.pfx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Update="wwwroot\html\passwordchange.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
