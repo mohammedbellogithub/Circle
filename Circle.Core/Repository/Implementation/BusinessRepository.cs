@@ -38,5 +38,18 @@ namespace Circle.Core.Repository.Implementation
 
             return businesses;
         }
+        
+        public IEnumerable<T?> GetExistingBusinessInfo<T,B>(string column, B value)
+        {
+
+            var department = this.SqlQuery<T>(@$"SELECT * FROM [Business] WHERE {column} = @value AND IsDeleted <> 1",
+                new
+                {
+                    value = value
+                }); ;
+
+
+            return department;
+        }
     }
 }

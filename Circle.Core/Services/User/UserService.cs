@@ -121,11 +121,11 @@ namespace Circle.Core.Services.User
                 return default;
             }
 
-            //set userProfile
-            var profile = new UserProfile();
-            profile.UserAccountId = user.Id;
+            ////set userProfile
+            //var profile = new UserProfile();
+            //profile.UserAccountId = user.Id;
 
-            await _userProfileRepository.AddAsync(profile);
+            //await _userProfileRepository.AddAsync(profile);
 
             var token = RandomGenerator.GenerateRandomNumber(6);
             await _cacheService.SetAsync(user.Email, token, duration: 5);
@@ -270,7 +270,11 @@ namespace Circle.Core.Services.User
 
             if (otp is not null && otp == code)
             {
-                
+                //set userProfile after validating
+                var profile = new UserProfile();
+                profile.UserAccountId = user.Id;
+                await _userProfileRepository.AddAsync(profile);
+
                 user.Activated = true;
                 user.EmailConfirmed = true;
                 await _userManager.UpdateAsync(user);
@@ -485,6 +489,8 @@ namespace Circle.Core.Services.User
                 base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
                 return;
             }
+
+            
             //var userProfile = await _userRepository.GetUserProfile<UserDetailsViewModel>(user.Id);
         }
     }

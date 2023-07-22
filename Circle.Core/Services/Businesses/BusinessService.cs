@@ -3,6 +3,7 @@ using Circle.Core.Repository.Abstraction;
 using Circle.Core.ViewModels.Businesses;
 using Circle.Shared.Dapper;
 using Circle.Shared.Dapper.Interfaces;
+using Circle.Shared.Extensions;
 using Circle.Shared.Helpers;
 using Circle.Shared.Models.Businesses;
 using Circle.Shared.Models.UserIdentity;
@@ -28,7 +29,17 @@ namespace Circle.Core.Services.Businesses
 
         public async Task CreateBusiness(CreateBusinessViewModel viewModel)
         {
-            var business = (Business)viewModel;
+            if (!viewModel.Email1.IsValidEmail() || !viewModel.Email2.IsValidEmail())
+            {
+                base.Results.Add(new ValidationResult($"Email format is invalid."));
+                return;
+            }
+
+            if (!viewModel.PhoneNumber1.IsValidPhoneNumber() || !viewModel.PhoneNumber2.IsValidPhoneNumber())
+            {
+                base.Results.Add(new ValidationResult($"Phone number format is invalid."));
+                return;
+            }
 
             var user = await _userManager.FindByIdAsync(WebHelpers.CurrentUser.UserId);
 
@@ -36,6 +47,25 @@ namespace Circle.Core.Services.Businesses
             {
 
                 base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
+                return;
+            }
+            var business = (Business)viewModel;
+
+            var email1Exists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel, string>("Email1", viewModel.Email1);
+
+
+            if (email1Exists != null)
+            {
+                base.Results.Add(new ValidationResult($"Business Email is associated with another account, Kindly reconfirm details provided."));
+                return;
+            }
+
+            var phoneNumberExists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel, string>("PhoneNumber1", viewModel.PhoneNumber1);
+
+
+            if (phoneNumberExists != null)
+            {
+                base.Results.Add(new ValidationResult($"Business PhoneNumber is associated with another account, Kindly reconfirm details provided."));
                 return;
             }
 
@@ -50,6 +80,12 @@ namespace Circle.Core.Services.Businesses
            
             var response = await _businessRepository.GetBusinessByIdAsync<BusinessResponseViewModel>(id, userId);
 
+            if (response is null)
+            {
+                base.Results.Add(new ValidationResult($"Business not found. Kindly contact technical support."));
+                return null;
+            }
+
             return response;
         }
 
@@ -63,6 +99,19 @@ namespace Circle.Core.Services.Businesses
 
         public async Task UpdateBusiness(EditBusinessViewModel viewModel)
         {
+            if (!viewModel.Email1.IsValidEmail() || !viewModel.Email2.IsValidEmail())
+            {
+                base.Results.Add(new ValidationResult($"Email format is invalid."));
+                return;
+            }
+
+            if (!viewModel.PhoneNumber1.IsValidPhoneNumber() || !viewModel.PhoneNumber2.IsValidPhoneNumber())
+            {
+                base.Results.Add(new ValidationResult($"Phone number format is invalid."));
+                return;
+            }
+
+            
             var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
 
             var business = await _businessRepository.GetBusinessByIdAsync<BusinessDto>(viewModel.Id, userId);
@@ -70,6 +119,24 @@ namespace Circle.Core.Services.Businesses
             if (business is null)
             {
                 base.Results.Add(new ValidationResult($"Business not found, Kindly reconfirm details provided."));
+                return;
+            }
+
+            var email1Exists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel, string>("Email1", viewModel.Email1);
+
+
+            if (email1Exists != null && business.Email1 != viewModel.Email1)
+            {
+                base.Results.Add(new ValidationResult($"Business Email is associated with another account, Kindly reconfirm details provided."));
+                return;
+            }
+
+            var phoneNumberExists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel, string>("PhoneNumber1", viewModel.PhoneNumber1);
+
+
+            if (phoneNumberExists != null && business.PhoneNumber1 != viewModel.PhoneNumber1)
+            {
+                base.Results.Add(new ValidationResult($"Business PhoneNumber is associated with another account, Kindly reconfirm details provided."));
                 return;
             }
 
