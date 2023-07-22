@@ -76,9 +76,23 @@ namespace Circle.Api
 
                 if (!authSettings.RequireHttps)
                 {
+                    byte[] rawEncryptionData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                      "wwwroot", "encryption-certificate.pfx"));
+
+                    var encryptionCertificate = new X509Certificate2(rawEncryptionData, authSettings.Password, X509KeyStorageFlags.MachineKeySet |
+                        X509KeyStorageFlags.Exportable);
+
+                    byte[] rawSigningData = File.ReadAllBytes(Path.Combine(builder.Environment.ContentRootPath,
+                      "wwwroot", "signing-certificate.pfx"));
+
+                    var signingCertificate = new X509Certificate2(rawSigningData, authSettings.Password, X509KeyStorageFlags.MachineKeySet |
+                        X509KeyStorageFlags.Exportable);
+
+
+                    options.AddEncryptionCertificate(encryptionCertificate).AddSigningCertificate(signingCertificate);
                     //Register the signing and encryption credentials.
-                    options.AddDevelopmentEncryptionCertificate()
-                           .AddDevelopmentSigningCertificate();
+                    //options.AddDevelopmentEncryptionCertificate()
+                    //       .AddDevelopmentSigningCertificate();
                 }
                 else
                 {
