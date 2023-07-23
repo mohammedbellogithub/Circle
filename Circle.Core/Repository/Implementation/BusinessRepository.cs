@@ -1,6 +1,7 @@
 ﻿using Circle.Core.Repository.Abstraction;
 using Circle.Shared.Dapper;
 using Circle.Shared.Dapper.Interfaces;
+using Circle.Shared.Helpers;
 using Circle.Shared.Models.Businesses;
 using Dapper;
 using System;
@@ -18,8 +19,10 @@ namespace Circle.Core.Repository.Implementation
 
         }
 
-        public async Task<T?> GetBusinessByIdAsync<T>(Guid id, Guid userId)
+        public async Task<T?> GetBusinessByIdAsync<T>(Guid id)
         {
+            var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
+
             var parameters = new DynamicParameters();
             parameters.Add("Id", id);
             parameters.Add("userId", userId);
@@ -29,14 +32,29 @@ namespace Circle.Core.Repository.Implementation
             return business.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<T?>> GetUserBusinessesAsync<T>(Guid userId)
+        public async Task<IEnumerable<T?>> GetUserBusinessesAsync<T>()
         {
+            var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
+
             var parameters = new DynamicParameters();
             parameters.Add("userId", userId);
 
             var businesses = await this.ExecuteStoredProcedure<T>("[sp_get_userBusinesses]", parameters);
 
             return businesses;
+        }
+        
+        public IEnumerable<T?> GetExistingBusinessInfo<T,B>(string column, B value)
+        {
+
+            var department = this.SqlQuery<T>(@$"SELECT * FROM [Business] WHERE {column} = @value AND IsDeleted <> 1",
+                new
+                {
+                    value = value
+                }); ;
+
+
+            return department;
         }
     }
 }

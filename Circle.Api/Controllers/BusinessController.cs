@@ -54,7 +54,7 @@ namespace Circle.Api.Controllers
                 return EmptyPayloadResponse();
             }
 
-            await _businessService.CreateBusiness(viewModel);
+            await _businessService.CreateBusinessAsync(viewModel);
 
             if (_businessService.HasError)
             {
@@ -73,7 +73,7 @@ namespace Circle.Api.Controllers
                 return EmptyPayloadResponse();
             }
 
-            await _businessService.UpdateBusiness(viewModel);
+            await _businessService.UpdateBusinessAsync(viewModel);
 
             if (_businessService.HasError)
             {
@@ -82,6 +82,18 @@ namespace Circle.Api.Controllers
 
             return ApiResponse(null, "Successful", ApiResponseCodes.OK);
 
+        }
+
+        [HttpDelete("delete-business")]
+        public async Task<IActionResult> DeleteBusiness(Guid Id)
+        {
+            await _businessService.DeleteBusinessAsync(Id);
+            if (_businessService.HasError)
+            {
+                return ApiResponse(null, _businessService.Errors, ApiResponseCodes.ERROR);
+            }
+
+            return ApiResponse(null, "Successful", ApiResponseCodes.OK);
         }
     }
 }

@@ -46,6 +46,8 @@ namespace Circle.Api
             builder.Services.AddTransient<IEmailService, EmailService>();
             builder.Services.AddTransient<IAuthorizationHandler, PermissionsAuthorizationHandler>();
             builder.Services.AddTransient<IBusinessService, BusinessService>();
+            builder.Services.AddTransient<IBusinessCategoryService, BusinessCategoryService>();
+
 
 
             return builder;
