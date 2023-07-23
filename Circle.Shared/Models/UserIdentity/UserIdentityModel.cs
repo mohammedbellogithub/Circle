@@ -41,7 +41,7 @@ namespace Circle.Shared.Models.UserIdentity
         public string? Department { get; set; }
         public bool? IsPasswordDefault { get; set; }
         public string? StaffNo { get; set; }
-        public ICollection<Business> Posts { get; } = new List<Business>();
+        public ICollection<Business> Businesses { get; } = new List<Business>();
         public UserProfile UserProfile { get; set; } 
 
     }

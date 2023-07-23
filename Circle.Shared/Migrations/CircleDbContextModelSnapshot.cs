@@ -95,7 +95,7 @@ namespace Circle.Shared.Migrations
 
                     b.HasIndex("UserAccountId");
 
-                    b.ToTable("Business");
+                    b.ToTable("Business", (string)null);
                 });
 
             modelBuilder.Entity("Circle.Shared.Models.Businesses.BusinessCategory", b =>
@@ -144,7 +144,7 @@ namespace Circle.Shared.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("BusinessCategory");
+                    b.ToTable("BusinessCategory", (string)null);
                 });
 
             modelBuilder.Entity("Circle.Shared.Models.Businesses.BusinessListing", b =>
@@ -205,7 +205,7 @@ namespace Circle.Shared.Migrations
 
                     b.HasIndex("BusinessCategoryId");
 
-                    b.ToTable("BusinessListing");
+                    b.ToTable("BusinessListing", (string)null);
                 });
 
             modelBuilder.Entity("Circle.Shared.Models.Businesses.BusinessListingDocument", b =>
@@ -260,7 +260,7 @@ namespace Circle.Shared.Migrations
 
                     b.HasIndex("BusinessListingId");
 
-                    b.ToTable("BusinessListingDocument");
+                    b.ToTable("BusinessListingDocument", (string)null);
                 });
 
             modelBuilder.Entity("Circle.Shared.Models.OpenIddict.CircleOpenIddictApplication", b =>

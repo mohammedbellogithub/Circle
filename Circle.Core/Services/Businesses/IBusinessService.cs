@@ -13,7 +13,8 @@ namespace Circle.Core.Services.Businesses
     {
         Task<BusinessResponseViewModel?> GetBusinessDetail(Guid id);
         Task<IEnumerable<BusinessResponseViewModel?>> GetUserBusinesses();
-        Task CreateBusiness(CreateBusinessViewModel viewModel);
-        Task UpdateBusiness(EditBusinessViewModel viewModel);
+        Task CreateBusinessAsync(CreateBusinessViewModel viewModel);
+        Task UpdateBusinessAsync(EditBusinessViewModel viewModel);
+        Task DeleteBusinessAsync(Guid id);
     }
 }

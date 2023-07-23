@@ -12,7 +12,7 @@ namespace Circle.Core.Registration
             var services = builder.Services;
             services.AddTransient<IUserProfileRepository, UserProfileRepository>();
             services.AddTransient<IBusinessRepository, BusinessRepository>();
-
+            services.AddTransient<IBusinessCategoryRepository, BusinessCategoryRepository>();
             return builder;
         }
     }

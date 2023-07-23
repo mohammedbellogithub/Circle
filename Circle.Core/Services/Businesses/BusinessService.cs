@@ -27,7 +27,7 @@ namespace Circle.Core.Services.Businesses
             _businessRepository = businessRepository;
         }
 
-        public async Task CreateBusiness(CreateBusinessViewModel viewModel)
+        public async Task CreateBusinessAsync(CreateBusinessViewModel viewModel)
         {
             if (!viewModel.Email1.IsValidEmail() || !viewModel.Email2.IsValidEmail())
             {
@@ -74,11 +74,27 @@ namespace Circle.Core.Services.Businesses
             await this.AddAsync(business);
         }
 
+        public async Task DeleteBusinessAsync(Guid id)
+        {
+            var business = await _businessRepository.GetBusinessByIdAsync<Business>(id);
+
+            if (business is null)
+            {
+                base.Results.Add(new ValidationResult($"Business not found. Kindly contact technical support."));
+                return;
+            }
+
+            business.IsDeleted = true;
+            business.IsActive = false;
+
+            await this.UpdateAsync(business);
+        }
+
         public async Task<BusinessResponseViewModel?> GetBusinessDetail(Guid id)
         {
             var userId= Guid.Parse(WebHelpers.CurrentUser.UserId);
            
-            var response = await _businessRepository.GetBusinessByIdAsync<BusinessResponseViewModel>(id, userId);
+            var response = await _businessRepository.GetBusinessByIdAsync<BusinessResponseViewModel>(id);
 
             if (response is null)
             {
@@ -91,13 +107,12 @@ namespace Circle.Core.Services.Businesses
 
         public async Task<IEnumerable<BusinessResponseViewModel?>> GetUserBusinesses()
         {
-            var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
-            var result = await _businessRepository.GetUserBusinessesAsync<BusinessResponseViewModel>(userId);
+            var result = await _businessRepository.GetUserBusinessesAsync<BusinessResponseViewModel>();
 
             return result;
         }
 
-        public async Task UpdateBusiness(EditBusinessViewModel viewModel)
+        public async Task UpdateBusinessAsync(EditBusinessViewModel viewModel)
         {
             if (!viewModel.Email1.IsValidEmail() || !viewModel.Email2.IsValidEmail())
             {
@@ -111,10 +126,7 @@ namespace Circle.Core.Services.Businesses
                 return;
             }
 
-            
-            var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
-
-            var business = await _businessRepository.GetBusinessByIdAsync<BusinessDto>(viewModel.Id, userId);
+            var business = await _businessRepository.GetBusinessByIdAsync<BusinessDto>(viewModel.Id);
 
             if (business is null)
             {

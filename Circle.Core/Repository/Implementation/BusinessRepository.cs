@@ -1,6 +1,7 @@
 ﻿using Circle.Core.Repository.Abstraction;
 using Circle.Shared.Dapper;
 using Circle.Shared.Dapper.Interfaces;
+using Circle.Shared.Helpers;
 using Circle.Shared.Models.Businesses;
 using Dapper;
 using System;
@@ -18,8 +19,10 @@ namespace Circle.Core.Repository.Implementation
 
         }
 
-        public async Task<T?> GetBusinessByIdAsync<T>(Guid id, Guid userId)
+        public async Task<T?> GetBusinessByIdAsync<T>(Guid id)
         {
+            var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
+
             var parameters = new DynamicParameters();
             parameters.Add("Id", id);
             parameters.Add("userId", userId);
@@ -29,8 +32,10 @@ namespace Circle.Core.Repository.Implementation
             return business.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<T?>> GetUserBusinessesAsync<T>(Guid userId)
+        public async Task<IEnumerable<T?>> GetUserBusinessesAsync<T>()
         {
+            var userId = Guid.Parse(WebHelpers.CurrentUser.UserId);
+
             var parameters = new DynamicParameters();
             parameters.Add("userId", userId);
 
