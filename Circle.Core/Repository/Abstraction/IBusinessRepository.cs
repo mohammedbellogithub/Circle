@@ -10,7 +10,7 @@ namespace Circle.Core.Repository.Abstraction
 {
     public interface IBusinessRepository : IService<Business>
     {
-        IEnumerable<T?> GetExistingBusinessInfo<T,B>(string column, B value);
+        IEnumerable<T?> GetExistingBusinessInfo<T>(string columnName, object value);
         Task<T?> GetBusinessByIdAsync<T>(Guid id);
         Task<IEnumerable<T?>> GetUserBusinessesAsync<T>();
     }

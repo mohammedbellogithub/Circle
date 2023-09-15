@@ -65,4 +65,10 @@ namespace Circle.Core.ViewModels.User
             return destination;
         }
     }
+
+
+    public class UserProfileViewModel
+    {
+
+    }
 }

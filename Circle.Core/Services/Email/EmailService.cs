@@ -60,5 +60,6 @@ namespace Circle.Core.Services.Email
         {
             throw new NotImplementedException();
         }
+        
     }
 }

@@ -29,13 +29,13 @@ namespace Circle.Core.Repository.Implementation
             return department.FirstOrDefault();
         }
 
-        public async Task<bool> SetProfile(SetUserProfileViewModel viewModel, Guid userId)
+        public async Task<UserProfileViewModel> SetProfile(SetUserProfileViewModel viewModel, Guid userId)
         {
             var user = await this.GetUserProfile<UserProfile>(userId);
 
             if (user is null)
             {
-                return false;
+                return null;
             }
             user.ProfileName = viewModel.ProfileName;
             user.Location = viewModel.Location;

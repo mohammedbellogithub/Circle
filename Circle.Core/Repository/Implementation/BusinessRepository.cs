@@ -44,17 +44,16 @@ namespace Circle.Core.Repository.Implementation
             return businesses;
         }
         
-        public IEnumerable<T?> GetExistingBusinessInfo<T,B>(string column, B value)
+        public IEnumerable<T?> GetExistingBusinessInfo<T>(string columnName, object value)
         {
-
-            var department = this.SqlQuery<T>(@$"SELECT * FROM [Business] WHERE {column} = @value AND IsDeleted <> 1",
+            var business = this.SqlQuery<T>(@$"SELECT * FROM [Business] WHERE {columnName} = @value AND IsDeleted <> 1",
                 new
                 {
                     value = value
                 }); ;
 
 
-            return department;
+            return business;
         }
     }
 }
