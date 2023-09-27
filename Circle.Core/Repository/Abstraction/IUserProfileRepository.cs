@@ -13,6 +13,6 @@ namespace Circle.Core.Repository.Abstraction
     public interface IUserProfileRepository : IService<UserProfile>
     {
         Task<T?> GetUserProfile<T>(Guid userId);
-        Task<T> SetProfile<T>(SetUserProfileViewModel viewModel, Guid userId);
+        Task<UserProfileViewModel> SetProfile(SetUserProfileViewModel viewModel, Guid userId);
     }
 }

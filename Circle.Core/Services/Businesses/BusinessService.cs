@@ -51,7 +51,7 @@ namespace Circle.Core.Services.Businesses
             }
             var business = (Business)viewModel;
 
-            var email1Exists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(viewModel.Email1);
+            var email1Exists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(nameof(viewModel.Email1), viewModel.Email1);
 
 
             if (email1Exists != null)
@@ -60,7 +60,7 @@ namespace Circle.Core.Services.Businesses
                 return;
             }
 
-            var phoneNumberExists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(viewModel.PhoneNumber1);
+            var phoneNumberExists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(nameof(viewModel.PhoneNumber1), viewModel.PhoneNumber1);
 
 
             if (phoneNumberExists != null)
@@ -134,7 +134,7 @@ namespace Circle.Core.Services.Businesses
                 return;
             }
 
-            var email1Exists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(viewModel.Email1);
+            var email1Exists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(nameof(viewModel.Email1), viewModel.Email1);
 
 
             if (email1Exists != null && business.Email1 != viewModel.Email1)
@@ -143,7 +143,7 @@ namespace Circle.Core.Services.Businesses
                 return;
             }
 
-            var phoneNumberExists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(viewModel.PhoneNumber1);
+            var phoneNumberExists = _businessRepository.GetExistingBusinessInfo<BusinessResponseViewModel>(nameof(viewModel.PhoneNumber1), viewModel.PhoneNumber1);
 
 
             if (phoneNumberExists != null && business.PhoneNumber1 != viewModel.PhoneNumber1)

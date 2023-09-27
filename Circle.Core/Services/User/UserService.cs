@@ -482,9 +482,9 @@ namespace Circle.Core.Services.User
                 return;
             }
 
-            var Successfull = await _userProfileRepository.SetProfile(viewModel, user.Id);
+            var userProfile = await _userProfileRepository.SetProfile(viewModel, user.Id);
 
-            if (!Successfull)
+            if (userProfile is null)
             {
                 base.Results.Add(new ValidationResult($"Request failed. Kindly contact technical support."));
                 return;

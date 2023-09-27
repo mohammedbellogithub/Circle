@@ -44,7 +44,7 @@ namespace Circle.Core.Repository.Implementation
 
 
             await this.UpdateAsync(user);
-            return true;
+            return null;
         }
     }
 }
